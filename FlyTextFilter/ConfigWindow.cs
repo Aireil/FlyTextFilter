@@ -32,9 +32,13 @@ namespace FlyTextFilter
             {
                 if (ImGui.BeginTabItem("Types"))
                 {
-                    ImGui.Text("Use /xllog or press this button to see logs of fly text types.");
-
                     var hasChanged = false;
+
+                    ImGui.Checkbox($"Enable logging##EnableLoggingButton", ref Service.Configuration.IsLoggingEnabled);
+
+                    if (ImGui.IsItemHovered()) ImGui.SetTooltip("Reset every restart to reduce spam");
+
+                    ImGui.Text("Enable logging and use /xllog to see logs of fly text types.");
 
                     if (ImGui.BeginTable("###TableKinds", 3))
                     {

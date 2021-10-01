@@ -28,6 +28,9 @@ namespace FlyTextFilter
 
         public HashSet<FlyTextKind> HideFlyTextKindOthers = new ();
 
+        [JsonIgnore]
+        public bool IsLoggingEnabled;
+
         public void Save()
             => Service.Interface.SavePluginConfig(this);
 

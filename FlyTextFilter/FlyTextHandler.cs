@@ -45,12 +45,15 @@ namespace FlyTextFilter
             ref float yOffset,
             ref bool handled)
         {
-            PluginLog.Information($"" +
-                                  $"Type: {kind.ToString()}" +
-                                  $" - Value1: {val1}" +
-                                  $" - Value2 : {val2}" +
-                                  $" - Text1: {text1}" +
-                                  $" - Text2: {text2}");
+            if (Service.Configuration.IsLoggingEnabled)
+            {
+                PluginLog.Information($"" +
+                                      $"Type: {kind.ToString()}" +
+                                      $" - Value1: {val1}" +
+                                      $" - Value2 : {val2}" +
+                                      $" - Text1: {text1}" +
+                                      $" - Text2: {text2}");
+            }
 
             // status effects
             if (text1.TextValue.StartsWith("+ ") || text1.TextValue.StartsWith("- "))
@@ -89,21 +92,21 @@ namespace FlyTextFilter
         {
             try
             {
-                if (target is null) return;
-                if ((int)kind >= 52) return;
-
                 var localPlayer = Service.ClientState.LocalPlayer;
                 if (localPlayer is not null)
                 {
                     var isLocalPlayer = localPlayer.Address.ToInt64() == (long)source;
 
-                    PluginLog.Information($"" +
-                                          $"Type: {kind.ToString()}" +
-                                          $" - Value1: {val1}" +
-                                          $" - Value2 : {val2}" +
-                                          $" - Value3: {val3}" +
-                                          $" - Value4: {val4}" +
-                                          $" - Source: {(isLocalPlayer ? "You" : "Others")}");
+                    if (Service.Configuration.IsLoggingEnabled)
+                    {
+                        PluginLog.Information($"" +
+                                              $"Type: {kind.ToString()}" +
+                                              $" - Value1: {val1}" +
+                                              $" - Value2 : {val2}" +
+                                              $" - Value3: {val3}" +
+                                              $" - Value4: {val4}" +
+                                              $" - Source: {(isLocalPlayer ? "You" : "Others")}");
+                    }
 
                     if (isLocalPlayer && Service.Configuration.HideFlyTextKindPlayer.Contains(kind))
                         return;
