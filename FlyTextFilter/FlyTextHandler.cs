@@ -95,7 +95,8 @@ namespace FlyTextFilter
                 var localPlayer = Service.ClientState.LocalPlayer;
                 if (localPlayer is not null)
                 {
-                    var isLocalPlayer = localPlayer.Address.ToInt64() == (long)source;
+                    var isOnLocalPlayer = localPlayer.Address.ToInt64() == (long)target;
+                    var isFromLocalPlayer = localPlayer.Address.ToInt64() == (long)source;
 
                     if (Service.Configuration.IsLoggingEnabled)
                     {
@@ -105,13 +106,29 @@ namespace FlyTextFilter
                                               $" - Value2 : {val2}" +
                                               $" - Value3: {val3}" +
                                               $" - Value4: {val4}" +
-                                              $" - Source: {(isLocalPlayer ? "You" : "Others")}");
+                                              $" - From: {(isFromLocalPlayer ? "You" : "Others")}" +
+                                              $" - On: {(isOnLocalPlayer ? "You" : "Others")}");
                     }
 
-                    if (isLocalPlayer && Service.Configuration.HideFlyTextKindPlayer.Contains(kind))
+                    if (isFromLocalPlayer && Service.Configuration.HideFlyTextKindPlayer.Contains(kind))
+                    {
                         return;
-                    if (!isLocalPlayer && Service.Configuration.HideFlyTextKindOthers.Contains(kind))
+                    }
+
+                    if (!isFromLocalPlayer && Service.Configuration.HideFlyTextKindOthers.Contains(kind))
+                    {
                         return;
+                    }
+
+                    if (isOnLocalPlayer && Service.Configuration.HideFlyTextKindOnPlayer.Contains(kind))
+                    {
+                        return;
+                    }
+
+                    if (!isOnLocalPlayer && Service.Configuration.HideFlyTextKindOnOthers.Contains(kind))
+                    {
+                        return;
+                    }
                 }
             }
             catch (Exception ex)

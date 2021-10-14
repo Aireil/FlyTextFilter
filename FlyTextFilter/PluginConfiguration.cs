@@ -28,6 +28,10 @@ namespace FlyTextFilter
 
         public HashSet<FlyTextKind> HideFlyTextKindOthers = new ();
 
+        public HashSet<FlyTextKind> HideFlyTextKindOnPlayer = new ();
+
+        public HashSet<FlyTextKind> HideFlyTextKindOnOthers = new ();
+
         [JsonIgnore]
         public bool IsLoggingEnabled;
 

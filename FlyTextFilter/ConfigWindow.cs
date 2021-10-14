@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -7,6 +8,7 @@ using Dalamud.Game.Text;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
 
 namespace FlyTextFilter
 {
@@ -21,7 +23,7 @@ namespace FlyTextFilter
             this.RespectCloseHotkey = true;
 
             this.SizeCondition = ImGuiCond.FirstUseEver;
-            this.Size = new Vector2(740, 490);
+            this.Size = new Vector2(600, 700);
 
             this.sortedFlyTextKinds = ((FlyTextKind[])Enum.GetValues(typeof(FlyTextKind))).OrderBy(x => x.ToString());
         }
@@ -40,54 +42,33 @@ namespace FlyTextFilter
 
                     ImGui.Text("Enable logging and use /xllog to see logs of fly text types.");
 
-                    if (ImGui.BeginTable("###TableKinds", 3))
+                    if (ImGui.BeginTable("###TableKinds", 5, ImGuiTableFlags.BordersH | ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.ScrollY))
                     {
                         ImGui.TableSetupScrollFreeze(0, 1);
                         ImGui.TableSetupColumn("Type", ImGuiTableColumnFlags.None);
                         ImGui.TableSetupColumn("Hide, from You", ImGuiTableColumnFlags.None);
                         ImGui.TableSetupColumn("Hide, from Others", ImGuiTableColumnFlags.None);
+                        ImGui.TableSetupColumn("Hide, on You", ImGuiTableColumnFlags.None);
+                        ImGui.TableSetupColumn("Hide, on Others", ImGuiTableColumnFlags.None);
                         ImGui.TableHeadersRow();
 
                         foreach (var kind in this.sortedFlyTextKinds)
                         {
                             ImGui.TableNextRow();
                             ImGui.TableSetColumnIndex(0);
-
                             ImGui.Text($"{kind.ToString()}");
 
                             ImGui.TableSetColumnIndex(1);
-
-                            var tmpPlayer = Service.Configuration.HideFlyTextKindPlayer.Contains(kind);
-                            hasChanged |= ImGui.Checkbox($"###{kind}player", ref tmpPlayer);
-
-                            if (tmpPlayer != Service.Configuration.HideFlyTextKindPlayer.Contains(kind))
-                            {
-                                if (tmpPlayer)
-                                {
-                                    Service.Configuration.HideFlyTextKindPlayer.Add(kind);
-                                }
-                                else
-                                {
-                                    Service.Configuration.HideFlyTextKindPlayer.Remove(kind);
-                                }
-                            }
+                            hasChanged |= DrawCheckboxTable(Service.Configuration.HideFlyTextKindPlayer, kind);
 
                             ImGui.TableSetColumnIndex(2);
+                            hasChanged |= DrawCheckboxTable(Service.Configuration.HideFlyTextKindOthers, kind);
 
-                            var tmpOthers = Service.Configuration.HideFlyTextKindOthers.Contains(kind);
-                            hasChanged |= ImGui.Checkbox($"###{kind}others", ref tmpOthers);
+                            ImGui.TableSetColumnIndex(3);
+                            hasChanged |= DrawCheckboxTable(Service.Configuration.HideFlyTextKindOnPlayer, kind);
 
-                            if (tmpOthers != Service.Configuration.HideFlyTextKindOthers.Contains(kind))
-                            {
-                                if (tmpOthers)
-                                {
-                                    Service.Configuration.HideFlyTextKindOthers.Add(kind);
-                                }
-                                else
-                                {
-                                    Service.Configuration.HideFlyTextKindOthers.Remove(kind);
-                                }
-                            }
+                            ImGui.TableSetColumnIndex(4);
+                            hasChanged |= DrawCheckboxTable(Service.Configuration.HideFlyTextKindOnOthers, kind);
                         }
 
                         ImGui.EndTable();
@@ -131,6 +112,30 @@ namespace FlyTextFilter
 
                 ImGui.EndTabBar();
             }
+        }
+
+        private static bool DrawCheckboxTable(ISet<FlyTextKind> collection, FlyTextKind kind)
+        {
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (ImGui.GetColumnWidth() / 2) - 12);
+
+            var tmpKind = collection.Contains(kind);
+            ImGui.Checkbox($"###{kind}{ImGui.TableGetColumnIndex()}", ref tmpKind);
+
+            if (tmpKind != collection.Contains(kind))
+            {
+                if (tmpKind)
+                {
+                    collection.Add(kind);
+                }
+                else
+                {
+                    collection.Remove(kind);
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

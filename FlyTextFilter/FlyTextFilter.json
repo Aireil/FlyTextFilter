@@ -4,5 +4,5 @@
   "Punchline": "Allows the filtering of the different fly text types.",
   "Description": "Allows the filtering of the different fly text types.",
   "RepoUrl": "https://github.com/Aireil/FlyTextFilter",
-  "Changelog": "Disable logging by default and add a toggle to reduce spam."
+  "Changelog": "Added filtering options based on target."
 }
