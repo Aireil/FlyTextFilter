@@ -29,7 +29,7 @@ namespace FlyTextFilter
         {
             Service.FlyTextGui.FlyTextCreated += FlyTextCreate;
 
-            var addScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? EB 32");
+            var addScreenLogAddress = Service.SigScanner.ScanText("E8 ? ? ? ? BB ? ? ? ? EB 37");
             this.addScreenLogHook = new Hook<AddScreenLogDelegate>(addScreenLogAddress, this.AddScreenLogDetour);
             this.addScreenLogHook.Enable();
         }
@@ -92,11 +92,11 @@ namespace FlyTextFilter
         {
             try
             {
-                var localPlayer = Service.ClientState.LocalPlayer;
+                var localPlayer = Service.ClientState.LocalPlayer?.Address.ToInt64();
                 if (localPlayer is not null)
                 {
-                    var isOnLocalPlayer = localPlayer.Address.ToInt64() == (long)target;
-                    var isFromLocalPlayer = localPlayer.Address.ToInt64() == (long)source;
+                    var isOnLocalPlayer = localPlayer == (long)target;
+                    var isFromLocalPlayer = localPlayer == (long)source;
 
                     if (Service.Configuration.IsLoggingEnabled)
                     {
