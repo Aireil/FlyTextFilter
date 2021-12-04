@@ -29,7 +29,7 @@ namespace FlyTextFilter
         {
             Service.FlyTextGui.FlyTextCreated += FlyTextCreate;
 
-            var addScreenLogAddress = Service.SigScanner.ScanText("E8 ? ? ? ? BB ? ? ? ? EB 37");
+            var addScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BB ?? ?? ?? ?? EB 37");
             this.addScreenLogHook = new Hook<AddScreenLogDelegate>(addScreenLogAddress, this.AddScreenLogDetour);
             this.addScreenLogHook.Enable();
         }
