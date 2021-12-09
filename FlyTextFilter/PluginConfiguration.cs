@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dalamud.Configuration;
 using Dalamud.Game.Gui.FlyText;
 using Newtonsoft.Json;
@@ -12,7 +13,7 @@ namespace FlyTextFilter
     public class PluginConfiguration : IPluginConfiguration
     {
         [JsonIgnore]
-        public const int CurrentConfigVersion = 2;
+        public const int CurrentConfigVersion = 3;
 
         public int Version { get; set; } = CurrentConfigVersion;
 
@@ -42,6 +43,7 @@ namespace FlyTextFilter
         {
             if (this.Version < CurrentConfigVersion)
             {
+                // import old plugin config
                 if (this.Version == 1)
                 {
                     for (var i = 0; i < this.KindToggleListPlayer.Count; i++)
@@ -63,8 +65,38 @@ namespace FlyTextFilter
                     this.Version = 2;
                 }
 
+                // Endwalker enum changes
+                if (this.Version == 2)
+                {
+                    this.ShiftEnums(21, 2);
+
+                    this.Version = 3;
+                }
+
                 this.Save();
             }
+        }
+
+        private static void ShiftEnum(ref HashSet<FlyTextKind> hashSet, int start, int shift)
+        {
+            var tmpList = hashSet.ToList();
+            for (var i = 0; i < tmpList.Count; i++)
+            {
+                if ((int)tmpList[i] >= start)
+                {
+                    tmpList[i] += shift;
+                }
+            }
+
+            hashSet = tmpList.ToHashSet();
+        }
+
+        private void ShiftEnums(int start, int shift)
+        {
+            ShiftEnum(ref this.HideFlyTextKindPlayer, start, shift);
+            ShiftEnum(ref this.HideFlyTextKindOthers, start, shift);
+            ShiftEnum(ref this.HideFlyTextKindOnPlayer, start, shift);
+            ShiftEnum(ref this.HideFlyTextKindOnOthers, start, shift);
         }
     }
 }
