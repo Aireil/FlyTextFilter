@@ -4,5 +4,5 @@
   "Punchline": "Allows the filtering of the different fly text types.",
   "Description": "Allows the filtering of the different fly text types.",
   "RepoUrl": "https://github.com/Aireil/FlyTextFilter",
-  "Changelog": "Added filtering options based on target."
+  "Changelog": "Fixed an issue with fly text types after Endwalker. If you have already made changes around weird type issues, you will have to undo them, sorry about that."
 }
