@@ -109,6 +109,11 @@ namespace FlyTextFilter
 
                 if (ImGui.BeginTabItem("Positions"))
                 {
+                    ImGui.Text("Fly texts on the player are organized in two groups:" +
+                               "\n- Healing, which refers to all healing received, including HoTs." +
+                               "\n- Status-Damage, which refers all status effects received/lost and damage taken." +
+                               "\nThis grouping is done by Square and cannot be modified for now.");
+
                     var posConfig = Service.Configuration.FlyTextPositions;
                     var (healingGroupDefaultPos, statusDamageGroupDefaultPos) = FlyTextHandler.GetDefaultPositions();
                     var (width, height) = Util.GetScreenSize();
@@ -141,6 +146,40 @@ namespace FlyTextFilter
                         Service.Configuration.Save();
                     }
 
+                    if (ImGui.Button("Test###TestPositions"))
+                    {
+                        Service.FlyTextGui.AddFlyText(
+                            FlyTextKind.NamedAttack2,
+                            0,
+                            5513,
+                            0,
+                            "Adloquium",
+                            string.Empty,
+                            4278213930,
+                            2801);
+
+                        Service.FlyTextGui.AddFlyText(
+                            FlyTextKind.NamedIcon,
+                            1,
+                            0,
+                            0,
+                            "+ Galvanize",
+                            string.Empty,
+                            4278213930,
+                            12801);
+
+                        Service.FlyTextGui.AddFlyText(
+                            FlyTextKind.NamedAttack,
+                            1,
+                            5998,
+                            0,
+                            "Triumvirate",
+                            string.Empty,
+                            4278190218,
+                            405);
+                    }
+
+                    ImGui.SameLine();
                     if (ImGui.Button("Reset all positions###ResetPositions"))
                     {
                         FlyTextHandler.ResetPositions();
