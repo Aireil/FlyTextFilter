@@ -130,6 +130,7 @@ namespace FlyTextFilter
             Service.FlyTextGui.FlyTextCreated -= FlyTextCreate;
             this.addScreenLogHook.Dispose();
             this.addonFlyTextOnRefreshHook.Dispose();
+            ResetPositions();
         }
 
         private long AddonFlyTextOnRefreshDetour(IntPtr addon, void* a2, void* a3)
