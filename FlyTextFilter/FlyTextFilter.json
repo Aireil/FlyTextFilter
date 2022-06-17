@@ -1,7 +1,7 @@
 {
   "Author": "Aireil",
   "Name": "FlyTextFilter",
-  "Punchline": "Allows the filtering of the different fly text types.",
-  "Description": "Allows the filtering of the different fly text types.",
+  "Punchline": "Filter by type and adjust position of fly texts.",
+  "Description": "Filter by type and adjust position of fly texts.",
   "RepoUrl": "https://github.com/Aireil/FlyTextFilter"
 }
