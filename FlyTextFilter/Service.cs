@@ -2,7 +2,6 @@
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.FlyText;
@@ -34,5 +33,7 @@ namespace FlyTextFilter
         internal static FlyTextGui FlyTextGui { get; private set; } = null!;
         [PluginService]
         internal static SigScanner SigScanner { get; private set; } = null!;
+        [PluginService]
+        internal static GameGui GameGui { get; private set; } = null!;
     }
 }

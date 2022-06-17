@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 using Dalamud.Game.Gui.FlyText;
-using Dalamud.Game.Text;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
+using FlyTextFilter.Model;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
 
 namespace FlyTextFilter
 {
@@ -105,6 +102,50 @@ namespace FlyTextFilter
 
                         ImGui.SameLine();
                         ImGui.Text(blString);
+                    }
+
+                    ImGui.EndTabItem();
+                }
+
+                if (ImGui.BeginTabItem("Positions"))
+                {
+                    var posConfig = Service.Configuration.FlyTextPositions;
+                    var (healingGroupDefaultPos, statusDamageGroupDefaultPos) = FlyTextHandler.GetDefaultPositions();
+                    var (width, height) = Util.GetScreenSize();
+
+                    var tmp = posConfig.HealingGroupX ?? healingGroupDefaultPos.X;
+                    if (ImGui.SliderFloat("Healing horizontal###HealingGroupPosXSlider", ref tmp, 0.0f, width))
+                    {
+                        posConfig.HealingGroupX = tmp;
+                        Service.Configuration.Save();
+                    }
+
+                    tmp = posConfig.HealingGroupY ?? healingGroupDefaultPos.Y;
+                    if (ImGui.SliderFloat("Healing vertical###HealingGroupPosYSlider", ref tmp, 0.0f, height))
+                    {
+                        posConfig.HealingGroupY = tmp;
+                        Service.Configuration.Save();
+                    }
+
+                    tmp = posConfig.StatusDamageGroupX ?? statusDamageGroupDefaultPos.X;
+                    if (ImGui.SliderFloat("Status-Damage horizontal###StatusDamageGroupPosXSlider", ref tmp, 0.0f, width))
+                    {
+                        posConfig.StatusDamageGroupX = tmp;
+                        Service.Configuration.Save();
+                    }
+
+                    tmp = posConfig.StatusDamageGroupY ?? statusDamageGroupDefaultPos.Y;
+                    if (ImGui.SliderFloat("Status-Damage vertical###StatusDamageGroupPosYSlider", ref tmp, 0.0f, height))
+                    {
+                        posConfig.StatusDamageGroupY = tmp;
+                        Service.Configuration.Save();
+                    }
+
+                    if (ImGui.Button("Reset all positions###ResetPositions"))
+                    {
+                        FlyTextHandler.ResetPositions();
+                        Service.Configuration.FlyTextPositions = new FlyTextPositions();
+                        Service.Configuration.Save();
                     }
 
                     ImGui.EndTabItem();

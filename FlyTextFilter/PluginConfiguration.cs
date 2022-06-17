@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Configuration;
 using Dalamud.Game.Gui.FlyText;
+using FlyTextFilter.Model;
 using Newtonsoft.Json;
 
 #pragma warning disable 618 // obsolete warning
@@ -18,20 +19,22 @@ namespace FlyTextFilter
         public int Version { get; set; } = CurrentConfigVersion;
 
         [Obsolete("Removed in v2")]
-        public List<bool> KindToggleListPlayer { private get; set; } = new ();
+        public List<bool> KindToggleListPlayer { private get; set; } = new();
 
         [Obsolete("Removed in v2")]
-        public List<bool> KindToggleListOther { private get; set; } = new ();
+        public List<bool> KindToggleListOther { private get; set; } = new();
 
-        public HashSet<string> Blacklist = new ();
+        public HashSet<string> Blacklist = new();
 
-        public HashSet<FlyTextKind> HideFlyTextKindPlayer = new ();
+        public HashSet<FlyTextKind> HideFlyTextKindPlayer = new();
 
-        public HashSet<FlyTextKind> HideFlyTextKindOthers = new ();
+        public HashSet<FlyTextKind> HideFlyTextKindOthers = new();
 
-        public HashSet<FlyTextKind> HideFlyTextKindOnPlayer = new ();
+        public HashSet<FlyTextKind> HideFlyTextKindOnPlayer = new();
 
-        public HashSet<FlyTextKind> HideFlyTextKindOnOthers = new ();
+        public HashSet<FlyTextKind> HideFlyTextKindOnOthers = new();
+
+        public FlyTextPositions FlyTextPositions = new();
 
         [JsonIgnore]
         public bool IsLoggingEnabled;

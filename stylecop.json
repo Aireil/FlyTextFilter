@@ -11,6 +11,9 @@
         },
         "maintainabilityRules": {
             "topLevelTypes": ["class", "interface", "struct", "enum"]
+        },
+        "namingRules": {
+            "tupleElementNameCasing" : "camelCase"
         }
     }
 }
