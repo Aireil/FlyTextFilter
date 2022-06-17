@@ -109,6 +109,8 @@ namespace FlyTextFilter
 
                 if (ImGui.BeginTabItem("Positions"))
                 {
+                    var hasChanged = false;
+
                     ImGui.Text("Fly texts on the player are organized in two groups:" +
                                "\n- Healing, which refers to all healing received, including HoTs." +
                                "\n- Status-Damage, which refers all status effects received/lost and damage taken." +
@@ -122,28 +124,34 @@ namespace FlyTextFilter
                     if (ImGui.SliderFloat("Healing horizontal###HealingGroupPosXSlider", ref tmp, 0.0f, width))
                     {
                         posConfig.HealingGroupX = tmp;
-                        Service.Configuration.Save();
+                        hasChanged = true;
                     }
 
                     tmp = posConfig.HealingGroupY ?? healingGroupDefaultPos.Y;
                     if (ImGui.SliderFloat("Healing vertical###HealingGroupPosYSlider", ref tmp, 0.0f, height))
                     {
                         posConfig.HealingGroupY = tmp;
-                        Service.Configuration.Save();
+                        hasChanged = true;
                     }
 
                     tmp = posConfig.StatusDamageGroupX ?? statusDamageGroupDefaultPos.X;
                     if (ImGui.SliderFloat("Status-Damage horizontal###StatusDamageGroupPosXSlider", ref tmp, 0.0f, width))
                     {
                         posConfig.StatusDamageGroupX = tmp;
-                        Service.Configuration.Save();
+                        hasChanged = true;
                     }
 
                     tmp = posConfig.StatusDamageGroupY ?? statusDamageGroupDefaultPos.Y;
                     if (ImGui.SliderFloat("Status-Damage vertical###StatusDamageGroupPosYSlider", ref tmp, 0.0f, height))
                     {
                         posConfig.StatusDamageGroupY = tmp;
+                        hasChanged = true;
+                    }
+
+                    if (hasChanged)
+                    {
                         Service.Configuration.Save();
+                        FlyTextHandler.SetPositions();
                     }
 
                     if (ImGui.Button("Test###TestPositions"))
