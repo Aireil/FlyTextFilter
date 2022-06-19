@@ -7,7 +7,7 @@ using Dalamud.Interface.Windowing;
 using FlyTextFilter.Model;
 using ImGuiNET;
 
-namespace FlyTextFilter
+namespace FlyTextFilter.GUI
 {
     internal class ConfigWindow : Window
     {

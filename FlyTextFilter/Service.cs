@@ -7,6 +7,7 @@ using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using FlyTextFilter.GUI;
 
 namespace FlyTextFilter
 {
