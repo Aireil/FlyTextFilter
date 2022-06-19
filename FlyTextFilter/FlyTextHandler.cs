@@ -151,7 +151,7 @@ namespace FlyTextFilter
             Character* target,
             Character* source,
             FlyTextKind kind,
-            int option,
+            int option, // 0 = DoT? / 2 = blocked / 3 = parried / 4 = resisted / 5 = default?
             int actionKind,
             int actionId,
             int val1,
