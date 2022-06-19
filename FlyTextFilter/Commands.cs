@@ -33,7 +33,7 @@ namespace FlyTextFilter
         {
             if (args.Equals("test", StringComparison.OrdinalIgnoreCase))
             {
-                FlyTextKindTests.RunTests();
+                FlyTextKindTests.RunTests(out _);
                 return;
             }
 

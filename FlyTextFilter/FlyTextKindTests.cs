@@ -70,11 +70,11 @@ public unsafe class FlyTextKindTests
         (9051, 14, 1),
     };
 
-    public static void RunTests()
+    public static void RunTests(out bool hasPassed)
     {
         var convertLogMessageIdToCharaLogKind = GetConvertFunction();
 
-        PluginLog.Information("FlyTextKind test start.");
+        PluginLog.Debug("FlyTextKind test start.");
 
         var hasChanged = false;
         foreach (var (logId, expectedFlyTextKind, expectedOption) in TestData)
@@ -91,10 +91,12 @@ public unsafe class FlyTextKindTests
 
         if (hasChanged)
         {
-            PluginLog.Error("FlyTextKind enum has changed, use testData to print new test data.");
+            PluginLog.Error("FlyTextKind enum has changed, please report the issue.");
         }
 
-        PluginLog.Information("FlyTextKind test end.");
+        hasPassed = !hasChanged;
+
+        PluginLog.Debug("FlyTextKind test end.");
     }
 
     public static void PrintData()

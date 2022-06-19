@@ -5,14 +5,17 @@ namespace FlyTextFilter.GUI
 {
     internal class ConfigWindow : Window
     {
+        private readonly TypesTab typesTab = new();
         private readonly BlacklistTab blacklistTab = new();
+        public bool hasPassedTests;
 
         public ConfigWindow()
             : base("FlyTextFilter")
         {
             this.RespectCloseHotkey = true;
-
             this.Flags = ImGuiWindowFlags.AlwaysAutoResize;
+
+            FlyTextKindTests.RunTests(out this.hasPassedTests);
         }
 
         public override void Draw()
@@ -22,6 +25,7 @@ namespace FlyTextFilter.GUI
                 if (ImGui.BeginTabItem("Types"))
                 {
                     TypesTab.Draw();
+
                     ImGui.EndTabItem();
                 }
 

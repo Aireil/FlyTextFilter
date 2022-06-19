@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using ImGuiNET;
 
 namespace FlyTextFilter;
@@ -21,5 +22,14 @@ public class Util
         }
 
         return (width, height);
+    }
+
+    public static void OpenLink(string link)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = link,
+            UseShellExecute = true,
+        });
     }
 }
