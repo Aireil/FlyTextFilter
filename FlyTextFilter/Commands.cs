@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.Command;
+﻿using System;
+using Dalamud.Game.Command;
 
 namespace FlyTextFilter
 {
@@ -30,6 +31,18 @@ namespace FlyTextFilter
 
         private static void OnCommand(string command, string args)
         {
+            if (args.Equals("test", StringComparison.OrdinalIgnoreCase))
+            {
+                FlyTextKindTests.RunTests();
+                return;
+            }
+
+            if (args.Equals("testData", StringComparison.OrdinalIgnoreCase))
+            {
+                FlyTextKindTests.PrintData();
+                return;
+            }
+
             Service.ConfigWindow.Toggle();
         }
     }
