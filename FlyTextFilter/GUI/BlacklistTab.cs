@@ -9,9 +9,9 @@ public class BlacklistTab
 
     public void Draw()
     {
-        ImGui.Text("Any exact match in Text1 or Text2 will filter the fly text.");
+        ImGui.Text("Any exact match will filter the fly text (e.g. action name, status effect name, etc.).");
 
-        ImGui.InputText("###addToBlacklist", ref this.addToBlacklist, 100);
+        ImGui.InputText("##addToBlacklist", ref this.addToBlacklist, 100);
         if (ImGui.Button("Add To Blacklist"))
         {
             Service.Configuration.Blacklist.Add(this.addToBlacklist);
@@ -25,7 +25,7 @@ public class BlacklistTab
 
         foreach (var blItem in Service.Configuration.Blacklist)
         {
-            if (ImGui.Button($"Remove###{blItem}"))
+            if (ImGui.Button($"Remove##{blItem}"))
             {
                 Service.Configuration.Blacklist.Remove(blItem);
                 Service.Configuration.Save();

@@ -1,49 +1,48 @@
 ﻿using System;
 using Dalamud.Game.Command;
 
-namespace FlyTextFilter
+namespace FlyTextFilter;
+
+public class Commands
 {
-    public class Commands
+    private const string CommandName = "/flytext";
+    private const string CommandNameAlias = "/ftf";
+
+    public Commands()
     {
-        private const string CommandName = "/flytext";
-        private const string CommandNameAlias = "/ftf";
-
-        public Commands()
+        Service.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            Service.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
-            {
-                HelpMessage = "Open config",
-                ShowInHelp = true,
-            });
+            HelpMessage = "Open config",
+            ShowInHelp = true,
+        });
 
-            Service.CommandManager.AddHandler(CommandNameAlias, new CommandInfo(OnCommand)
-            {
-                HelpMessage = "Open config",
-                ShowInHelp = true,
-            });
+        Service.CommandManager.AddHandler(CommandNameAlias, new CommandInfo(OnCommand)
+        {
+            HelpMessage = "Open config",
+            ShowInHelp = true,
+        });
+    }
+
+    public static void Dispose()
+    {
+        Service.CommandManager.RemoveHandler(CommandName);
+        Service.CommandManager.RemoveHandler(CommandNameAlias);
+    }
+
+    private static void OnCommand(string command, string args)
+    {
+        if (args.Equals("test", StringComparison.OrdinalIgnoreCase))
+        {
+            FlyTextKindTests.RunTests(out _);
+            return;
         }
 
-        public static void Dispose()
+        if (args.Equals("testData", StringComparison.OrdinalIgnoreCase))
         {
-            Service.CommandManager.RemoveHandler(CommandName);
-            Service.CommandManager.RemoveHandler(CommandNameAlias);
+            FlyTextKindTests.PrintData();
+            return;
         }
 
-        private static void OnCommand(string command, string args)
-        {
-            if (args.Equals("test", StringComparison.OrdinalIgnoreCase))
-            {
-                FlyTextKindTests.RunTests(out _);
-                return;
-            }
-
-            if (args.Equals("testData", StringComparison.OrdinalIgnoreCase))
-            {
-                FlyTextKindTests.PrintData();
-                return;
-            }
-
-            Service.ConfigWindow.Toggle();
-        }
+        Service.ConfigWindow.Toggle();
     }
 }

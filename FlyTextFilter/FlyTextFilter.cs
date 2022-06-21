@@ -3,43 +3,42 @@ using Dalamud.IoC;
 using Dalamud.Plugin;
 using FlyTextFilter.GUI;
 
-namespace FlyTextFilter
+namespace FlyTextFilter;
+
+public sealed class FlyTextFilter : IDalamudPlugin
 {
-    public sealed class FlyTextFilter : IDalamudPlugin
+    public string Name => "FlyTextFilter";
+
+    private readonly WindowSystem windowSystem;
+
+    public FlyTextFilter(
+        [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
     {
-        public string Name => "FlyTextFilter";
+        pluginInterface.Create<Service>();
 
-        private readonly WindowSystem windowSystem;
+        Service.Configuration = pluginInterface.GetPluginConfig() as PluginConfiguration ?? new PluginConfiguration();
+        Service.Configuration.Upgrade();
+        Service.FlyTextHandler = new FlyTextHandler();
 
-        public FlyTextFilter(
-            [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
-        {
-            pluginInterface.Create<Service>();
+        Service.ConfigWindow = new ConfigWindow();
+        this.windowSystem = new WindowSystem("FlyTextFilter");
+        this.windowSystem.AddWindow(Service.ConfigWindow);
 
-            Service.Configuration = pluginInterface.GetPluginConfig() as PluginConfiguration ?? new PluginConfiguration();
-            Service.Configuration.Upgrade();
-            Service.FlyTextHandler = new FlyTextHandler();
+        Service.Commands = new Commands();
 
-            Service.ConfigWindow = new ConfigWindow();
-            this.windowSystem = new WindowSystem("FlyTextFilter");
-            this.windowSystem.AddWindow(Service.ConfigWindow);
-
-            Service.Commands = new Commands();
-
-            Service.Interface.UiBuilder.OpenConfigUi += OpenConfigUi;
-            Service.Interface.UiBuilder.Draw += this.windowSystem.Draw;
-        }
-
-        public void Dispose()
-        {
-            Service.FlyTextHandler.Dispose();
-            Commands.Dispose();
-
-            Service.Interface.UiBuilder.OpenConfigUi -= OpenConfigUi;
-            Service.Interface.UiBuilder.Draw -= this.windowSystem.Draw;
-        }
-
-        private static void OpenConfigUi()
-            => Service.ConfigWindow.IsOpen = true;
+        Service.Interface.UiBuilder.OpenConfigUi += OpenConfigUi;
+        Service.Interface.UiBuilder.Draw += this.windowSystem.Draw;
     }
+
+    public void Dispose()
+    {
+        Service.FlyTextHandler.Dispose();
+        Commands.Dispose();
+
+        Service.Interface.UiBuilder.OpenConfigUi -= OpenConfigUi;
+        Service.Interface.UiBuilder.Draw -= this.windowSystem.Draw;
+    }
+
+    private static void OpenConfigUi()
+        => Service.ConfigWindow.IsOpen = true;
 }

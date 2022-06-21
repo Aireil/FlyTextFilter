@@ -18,34 +18,34 @@ public class PositionsTab
         var (width, height) = Util.GetScreenSize();
 
         var tmp = posConfig.HealingGroupX ?? healingGroupDefaultPos.X;
-        if (ImGui.SliderFloat("Healing horizontal###HealingGroupPosXSlider", ref tmp, 0.0f, width))
+        if (ImGui.SliderFloat("Healing horizontal##HealingGroupPosXSlider", ref tmp, 0.0f, width))
         {
             posConfig.HealingGroupX = tmp;
             Service.Configuration.Save();
         }
 
         tmp = posConfig.HealingGroupY ?? healingGroupDefaultPos.Y;
-        if (ImGui.SliderFloat("Healing vertical###HealingGroupPosYSlider", ref tmp, 0.0f, height))
+        if (ImGui.SliderFloat("Healing vertical##HealingGroupPosYSlider", ref tmp, 0.0f, height))
         {
             posConfig.HealingGroupY = tmp;
             Service.Configuration.Save();
         }
 
         tmp = posConfig.StatusDamageGroupX ?? statusDamageGroupDefaultPos.X;
-        if (ImGui.SliderFloat("Status-Damage horizontal###StatusDamageGroupPosXSlider", ref tmp, 0.0f, width))
+        if (ImGui.SliderFloat("Status-Damage horizontal##StatusDamageGroupPosXSlider", ref tmp, 0.0f, width))
         {
             posConfig.StatusDamageGroupX = tmp;
             Service.Configuration.Save();
         }
 
         tmp = posConfig.StatusDamageGroupY ?? statusDamageGroupDefaultPos.Y;
-        if (ImGui.SliderFloat("Status-Damage vertical###StatusDamageGroupPosYSlider", ref tmp, 0.0f, height))
+        if (ImGui.SliderFloat("Status-Damage vertical##StatusDamageGroupPosYSlider", ref tmp, 0.0f, height))
         {
             posConfig.StatusDamageGroupY = tmp;
             Service.Configuration.Save();
         }
 
-        if (ImGui.Button("Test###TestPositions"))
+        if (ImGui.Button("Test##TestPositions"))
         {
             FlyTextHandler.SetPositions();
 
@@ -81,7 +81,7 @@ public class PositionsTab
         }
 
         ImGui.SameLine();
-        if (ImGui.Button("Reset all positions###ResetPositions"))
+        if (ImGui.Button("Reset all positions##ResetPositions"))
         {
             FlyTextHandler.ResetPositions();
             Service.Configuration.FlyTextPositions = new FlyTextPositions();
