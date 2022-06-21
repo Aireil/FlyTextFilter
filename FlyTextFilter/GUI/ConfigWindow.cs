@@ -20,8 +20,6 @@ internal class ConfigWindow : Window
         this.Flags = ImGuiWindowFlags.AlwaysAutoResize;
 
         FlyTextKindTests.RunTests(out this.HasPassedTests);
-
-        this.IsOpen = true; // TODO delete
     }
 
     public override void OnOpen()
