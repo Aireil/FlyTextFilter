@@ -30,7 +30,7 @@ public class PluginConfiguration : IPluginConfiguration
 
     public bool ShouldAdjustPetSource = true;
 
-    public int NbOfLogs = 20;
+    public int NbOfLogs = 50;
 
     public void Save()
         => Service.Interface.SavePluginConfig(this);
