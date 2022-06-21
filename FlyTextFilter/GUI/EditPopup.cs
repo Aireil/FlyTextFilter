@@ -2,7 +2,7 @@
 using FlyTextFilter.Model;
 using ImGuiNET;
 
-namespace FlyTextFilter.GUI.TypesTab;
+namespace FlyTextFilter.GUI;
 
 public class EditPopup
 {

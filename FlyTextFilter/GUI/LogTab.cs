@@ -11,6 +11,13 @@ public class LogTab
 {
     public static void Draw()
     {
+        if (!Service.ConfigWindow.HasPassedTests)
+        {
+            ImGui.Text("Tests failed, this tab has been disabled to protect your config." +
+                       "\nSee the Types tab for more information.");
+            return;
+        }
+
         ImGui.Checkbox("Log fly texts", ref Service.FlyTextHandler.ShouldLog);
 
         Util.DrawHelp("Log all fly texts in the table below, including filtered ones." +
