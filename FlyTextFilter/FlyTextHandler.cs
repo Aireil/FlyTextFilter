@@ -28,8 +28,7 @@ public unsafe class FlyTextHandler
         int actionId,
         int val1,
         int val2,
-        int val3,
-        int val4);
+        int val3);
     private readonly Hook<AddToScreenLogWithScreenLogKindDelegate> addToScreenLogWithScreenLogKindHook;
 
     private delegate void AddToScreenLogItemDelegate(uint itemId, int count);
@@ -158,8 +157,7 @@ public unsafe class FlyTextHandler
                 2555,
                 1111,
                 2222,
-                3333,
-                4444);
+                3333);
         }
     }
 
@@ -180,8 +178,7 @@ public unsafe class FlyTextHandler
                     flyTextLog.ActionId,
                     flyTextLog.Val1,
                     flyTextLog.Val2,
-                    flyTextLog.Val3,
-                    flyTextLog.Val4);
+                    flyTextLog.Val3);
                 break;
             case FlyTextCreationSource.AddToScreenLogItem:
                 this.AddToScreenLogItemDetour(flyTextLog.ItemId, flyTextLog.Count);
@@ -276,15 +273,14 @@ public unsafe class FlyTextHandler
         int actionId,
         int val1,
         int val2,
-        int val3,
-        int val4)
+        int val3)
     {
         try
         {
             // preview
             if (option == 12500)
             {
-                this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, 5, actionKind, actionId, val1, val2, val3, val4);
+                this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, 5, actionKind, actionId, val1, val2, val3);
                 return;
             }
 
@@ -311,7 +307,6 @@ public unsafe class FlyTextHandler
                     Val1 = val1,
                     Val2 = val2,
                     Val3 = val3,
-                    Val4 = val4,
                     HasSourceBeenAdjusted = source != adjustedSource,
                 };
 
@@ -336,7 +331,7 @@ public unsafe class FlyTextHandler
             PluginLog.Error(ex, "Exception in AddScreenLogDetour");
         }
 
-        this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, val3, val4);
+        this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, val3);
     }
 
     private void AddToScreenLogItemDetour(uint itemId, int count)

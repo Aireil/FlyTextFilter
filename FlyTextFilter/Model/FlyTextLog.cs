@@ -17,7 +17,6 @@ public class FlyTextLog
     public int Val1;
     public int Val2;
     public int Val3;
-    public int Val4;
     public uint ItemId;
     public int Count;
     public bool HasSourceBeenAdjusted;
@@ -34,7 +33,6 @@ public class FlyTextLog
                && this.Val1 == flyTextLog.Val1
                && this.Val2 == flyTextLog.Val2
                && this.Val3 == flyTextLog.Val3
-               && this.Val4 == flyTextLog.Val4
                && this.ItemId == flyTextLog.ItemId
                && this.Count == flyTextLog.Count
                && this.HasSourceBeenAdjusted == flyTextLog.HasSourceBeenAdjusted;
@@ -52,7 +50,6 @@ public class FlyTextLog
         hashCode.Add(this.Val1);
         hashCode.Add(this.Val2);
         hashCode.Add(this.Val3);
-        hashCode.Add(this.Val4);
         hashCode.Add(this.ItemId);
         hashCode.Add(this.Count);
         hashCode.Add(this.HasSourceBeenAdjusted);
