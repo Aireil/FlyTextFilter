@@ -1,7 +1,7 @@
 {
   "Author": "Aireil",
   "Name": "FlyTextFilter",
-  "Punchline": "Filter fly texts based on multiple criteria and allow the adjustment of their position.",
-  "Description": "Filter fly texts based on multiple criteria and allow the adjustment of their position.",
+  "Punchline": "Filter fly texts and pop-ups texts based on multiple criteria and allow the adjustment of their positions.",
+  "Description": "Filter fly texts and pop-ups texts based on multiple criteria and allow the adjustment of their positions.",
   "RepoUrl": "https://github.com/Aireil/FlyTextFilter"
 }
