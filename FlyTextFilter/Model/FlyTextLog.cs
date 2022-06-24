@@ -1,6 +1,4 @@
-﻿
-
-// ReSharper disable NonReadonlyMemberInGetHashCode
+﻿// ReSharper disable NonReadonlyMemberInGetHashCode
 namespace FlyTextFilter.Model;
 
 public class FlyTextLog

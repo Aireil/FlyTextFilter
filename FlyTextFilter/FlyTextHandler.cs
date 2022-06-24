@@ -163,6 +163,8 @@ public unsafe class FlyTextHandler
             else
                 val1 = 1111;
 
+            var actionId = flyTextKind is FlyTextKind.NamedAttack2 or FlyTextKind.NamedCriticalHit2 ? 16230 : 2555;
+
             var flyTextCreation = new FlyTextCreation
             {
                 FlyTextKind = flyTextKind,
@@ -170,7 +172,7 @@ public unsafe class FlyTextHandler
                 TargetStyle = targetStyle,
                 Option = 5,
                 ActionKind = (byte)(flyTextKind == FlyTextKind.NamedIconWithItemOutline ? 2 : 1),
-                ActionId = 2555,
+                ActionId = actionId,
                 Val1 = val1,
                 Val2 = 0,
                 Val3 = 0,
@@ -301,6 +303,7 @@ public unsafe class FlyTextHandler
         try
         {
             SetPositions(addon);
+            SetScaling();
         }
         catch (Exception ex)
         {
@@ -365,7 +368,7 @@ public unsafe class FlyTextHandler
     {
         try
         {
-            PluginLog.Information($"FlyTextKind: {(int)flyTextCreation->FlyTextKind} - SourceStyle: {flyTextCreation->SourceStyle} - TargetStyle: {flyTextCreation->TargetStyle} ActionId: {flyTextCreation->ActionId} - ActionKind: {flyTextCreation->ActionKind} - Option: {flyTextCreation->Option} - Val1: {flyTextCreation->Val1} - Val2: {flyTextCreation->Val2} - Val3: {flyTextCreation->Val3}");
+            //PluginLog.Information($"FlyTextKind: {(int)flyTextCreation->FlyTextKind} - SourceStyle: {flyTextCreation->SourceStyle} - TargetStyle: {flyTextCreation->TargetStyle} ActionId: {flyTextCreation->ActionId} - ActionKind: {flyTextCreation->ActionKind} - Option: {flyTextCreation->Option} - Val1: {flyTextCreation->Val1} - Val2: {flyTextCreation->Val2} - Val3: {flyTextCreation->Val3}");
 
             bool shouldFilter;
 
