@@ -2,6 +2,7 @@
 
 public enum FlyTextCharCategory
 {
+    None,
     You,
     Party,
     Others,

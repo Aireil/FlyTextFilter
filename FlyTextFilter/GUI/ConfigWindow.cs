@@ -51,9 +51,9 @@ internal class ConfigWindow : Window
                 ImGui.EndTabItem();
             }
 
-            if (ImGui.BeginTabItem("Positions"))
+            if (ImGui.BeginTabItem("Adjustments"))
             {
-                PositionsTab.Draw();
+                AdjustmentsTab.Draw();
                 ImGui.EndTabItem();
             }
 

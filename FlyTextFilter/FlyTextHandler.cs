@@ -6,6 +6,8 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FlyTextFilter.Model;
 
 namespace FlyTextFilter;
@@ -14,7 +16,6 @@ public unsafe class FlyTextHandler
 {
     public bool ShouldLog;
     public ConcurrentQueue<FlyTextLog> Logs = new();
-    public FlyTextLog? IgnoreLog;
 
     private delegate long AddonFlyTextOnRefreshDelegate(IntPtr addon, void* a2, void* a3);
     private readonly Hook<AddonFlyTextOnRefreshDelegate> addonFlyTextOnRefreshHook;
@@ -23,19 +24,16 @@ public unsafe class FlyTextHandler
         Character* target,
         Character* source,
         FlyTextKind logKind,
-        int option,
-        int actionKind,
+        byte option,
+        byte actionKind,
         int actionId,
         int val1,
         int val2,
         int val3);
     private readonly Hook<AddToScreenLogWithScreenLogKindDelegate> addToScreenLogWithScreenLogKindHook;
 
-    private delegate void AddToScreenLogItemDelegate(uint itemId, int count);
-    private readonly Hook<AddToScreenLogItemDelegate> addToScreenLogItemHook;
-
-    private delegate void AddToScreenLogCraftingDelegate(Character* source, FlyTextKind flyTextKind, int val);
-    private readonly Hook<AddToScreenLogCraftingDelegate> addToScreenLogCraftingHook;
+    private delegate void* AddToScreenLogDelegate(long targetId, FlyTextCreation* flyTextCreation);
+    private readonly Hook<AddToScreenLogDelegate> addToScreenLogHook;
 
     public FlyTextHandler()
     {
@@ -50,16 +48,211 @@ public unsafe class FlyTextHandler
         this.addToScreenLogWithScreenLogKindHook = new Hook<AddToScreenLogWithScreenLogKindDelegate>(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
         this.addToScreenLogWithScreenLogKindHook.Enable();
 
-        var addToScreenLogItemAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8B 5C 24 ?? 66 83 7C 24");
-        this.addToScreenLogItemHook = new Hook<AddToScreenLogItemDelegate>(addToScreenLogItemAddress, this.AddToScreenLogItemDetour);
-        this.addToScreenLogItemHook.Enable();
-
-        var addToScreenLogCraftingAddress = Service.SigScanner.ScanText("48 85 C9 74 4D 53");
-        this.addToScreenLogCraftingHook = new Hook<AddToScreenLogCraftingDelegate>(addToScreenLogCraftingAddress, this.AddToScreenLogCraftingDetour);
-        this.addToScreenLogCraftingHook.Enable();
+        var addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 68 41 5F 41 5E ");
+        this.addToScreenLogHook = new Hook<AddToScreenLogDelegate>(addToScreenLogAddress, this.AddToScreenLogDetour);
+        this.addToScreenLogHook.Enable();
     }
 
-    public static void FlyTextCreate(
+    public static (Vector2 healingGroupPos, Vector2 statusDamageGroupPos) GetDefaultPositions()
+    {
+        var (width, height) = Util.GetScreenSize();
+
+        return (new Vector2(width * (49.0f / 100.0f), height / 2.0f), new Vector2(width * (11.0f / 20.0f), height / 2.0f));
+    }
+
+    public static void ResetPositions()
+    {
+        var (healingGroupPos, statusDamageGroupPos) = GetDefaultPositions();
+        var addon = Service.GameGui.GetAddonByName("_FlyText", 1);
+        if (addon == IntPtr.Zero)
+        {
+            return;
+        }
+
+        var flyTextArray = (FlyTextArray*)(addon + 0x26C8);
+
+        (*flyTextArray)[0]->X = healingGroupPos.X;
+        (*flyTextArray)[0]->Y = healingGroupPos.Y;
+
+        (*flyTextArray)[1]->X = statusDamageGroupPos.X;
+        (*flyTextArray)[1]->Y = statusDamageGroupPos.Y;
+    }
+
+    public static void SetPositions(IntPtr? addon = null)
+    {
+        if (addon == null || addon == IntPtr.Zero)
+        {
+            addon = Service.GameGui.GetAddonByName("_FlyText", 1);
+            if (addon == IntPtr.Zero)
+            {
+                return;
+            }
+        }
+
+        var flyTextArray = (FlyTextArray*)(addon + 0x26C8);
+        var posConfig = Service.Configuration.FlyTextAdjustments.FlyTextPositions;
+
+        if (posConfig.HealingGroupX != null)
+        {
+            (*flyTextArray)[0]->X = posConfig.HealingGroupX.Value;
+        }
+
+        if (posConfig.HealingGroupY != null)
+        {
+            (*flyTextArray)[0]->Y = posConfig.HealingGroupY.Value;
+        }
+
+        if (posConfig.StatusDamageGroupX != null)
+        {
+            (*flyTextArray)[1]->X = posConfig.StatusDamageGroupX.Value;
+        }
+
+        if (posConfig.StatusDamageGroupY != null)
+        {
+            (*flyTextArray)[1]->Y = posConfig.StatusDamageGroupY.Value;
+        }
+    }
+
+    public static void ResetScaling()
+    {
+        var agent = (IntPtr)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
+        if (agent == IntPtr.Zero)
+        {
+            return;
+        }
+
+        *(float*)(agent + 76) = 1.0f; // scale fly text
+        *(float*)(agent + 836) = 1.0f; // scale pop-up text
+    }
+
+    public static void SetScaling(IntPtr? agent = null)
+    {
+        if (agent == null || agent == IntPtr.Zero)
+        {
+            agent = (IntPtr)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
+            if (agent == IntPtr.Zero)
+            {
+                return;
+            }
+        }
+
+        var adjustmentsConfig = Service.Configuration.FlyTextAdjustments;
+
+        if (adjustmentsConfig.FlyTextScale != null)
+        {
+            *(float*)(agent + 76) = adjustmentsConfig.FlyTextScale.Value; // scale fly text
+        }
+
+        if (adjustmentsConfig.PopupTextScale != null)
+        {
+            *(float*)(agent + 836) = adjustmentsConfig.PopupTextScale.Value; // scale pop-up text
+        }
+    }
+
+    public void CreateFlyText(FlyTextKind flyTextKind, byte sourceStyle, byte targetStyle)
+    {
+        var localPlayer = Service.ClientState.LocalPlayer?.Address.ToInt64();
+        if (localPlayer != null)
+        {
+            var targetId = localPlayer.Value + 0x1AE0;
+            int val1;
+            if (flyTextKind is FlyTextKind.NamedIcon2 or FlyTextKind.NamedIconFaded2)
+                val1 = 3166;
+            else if (flyTextKind is FlyTextKind.NamedIcon or FlyTextKind.NamedIconFaded)
+                val1 = 3260;
+            else
+                val1 = 1111;
+
+            var flyTextCreation = new FlyTextCreation
+            {
+                FlyTextKind = flyTextKind,
+                SourceStyle = sourceStyle,
+                TargetStyle = targetStyle,
+                Option = 5,
+                ActionKind = (byte)(flyTextKind == FlyTextKind.NamedIconWithItemOutline ? 2 : 1),
+                ActionId = 2555,
+                Val1 = val1,
+                Val2 = 0,
+                Val3 = 0,
+            };
+
+            this.addToScreenLogHook.Original(targetId, &flyTextCreation);
+        }
+    }
+
+    public void CreateFlyText(FlyTextLog flyTextLog)
+    {
+        var localPlayer = Service.ClientState.LocalPlayer?.Address;
+        if (localPlayer != null && localPlayer != IntPtr.Zero)
+        {
+            var targetId = localPlayer.Value + 0x1AE0;
+            var flyTextCreation = flyTextLog.FlyTextCreation;
+            this.addToScreenLogHook.Original((long)targetId, &flyTextCreation);
+        }
+    }
+
+    public void Dispose()
+    {
+        Service.FlyTextGui.FlyTextCreated -= FlyTextCreate;
+        this.addToScreenLogHook.Dispose();
+        this.addToScreenLogWithScreenLogKindHook.Dispose();
+        this.addonFlyTextOnRefreshHook.Dispose();
+        ResetPositions();
+    }
+
+    private static bool ShouldFilter(Character* source, Character* target, FlyTextKind flyTextKind)
+    {
+        if (Service.Configuration.FlyTextSettings.TryGetValue(flyTextKind, out var flyTextSetting))
+        {
+            switch (GetFlyTextCharCategory(source))
+            {
+                case FlyTextCharCategory.You:
+                    return ShouldFilter(target, flyTextSetting.SourceYou);
+                case FlyTextCharCategory.Party:
+                    return ShouldFilter(target, flyTextSetting.SourceParty);
+                case FlyTextCharCategory.Others:
+                    return ShouldFilter(target, flyTextSetting.SourceOthers);
+                case FlyTextCharCategory.None:
+                default:
+                    return false;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool ShouldFilter(Character* target, FlyTextTargets flyTextTargets)
+    {
+        switch (GetFlyTextCharCategory(target))
+        {
+            case FlyTextCharCategory.You:
+                return flyTextTargets.HasFlag(FlyTextTargets.You);
+            case FlyTextCharCategory.Party:
+                return flyTextTargets.HasFlag(FlyTextTargets.Party);
+            case FlyTextCharCategory.Others:
+            case FlyTextCharCategory.None:
+            default:
+                return flyTextTargets.HasFlag(FlyTextTargets.Others);
+        }
+    }
+
+    private static FlyTextCharCategory GetFlyTextCharCategory(Character* character)
+    {
+        var localPlayer = (Character*)Service.ClientState.LocalPlayer?.Address;
+        if (character == localPlayer)
+        {
+            return FlyTextCharCategory.You;
+        }
+
+        if (Util.IsPartyMember(character))
+        {
+            return FlyTextCharCategory.Party;
+        }
+
+        return FlyTextCharCategory.Others;
+    }
+
+    private static void FlyTextCreate(
         ref FlyTextKind kind,
         ref int val1,
         ref int val2,
@@ -93,161 +286,14 @@ public unsafe class FlyTextHandler
         }
     }
 
-    public static (Vector2 healingGroupPos, Vector2 statusDamageGroupPos) GetDefaultPositions()
+    private void AddLog(FlyTextLog flyTextLog)
     {
-        var (width, height) = Util.GetScreenSize();
+        this.Logs.Enqueue(flyTextLog);
 
-        return (new Vector2(width * (49.0f / 100.0f), height / 2.0f), new Vector2(width * (11.0f / 20.0f), height / 2.0f));
-    }
-
-    public static void ResetPositions()
-    {
-        var (healingGroupPos, statusDamageGroupPos) = GetDefaultPositions();
-        var addon = Service.GameGui.GetAddonByName("_FlyText", 1);
-        if (addon == IntPtr.Zero) return;
-
-        var flyTextArray = (FlyTextArray*)(addon + 0x26C8);
-
-        (*flyTextArray)[0]->X = healingGroupPos.X;
-        (*flyTextArray)[0]->Y = healingGroupPos.Y;
-
-        (*flyTextArray)[1]->X = statusDamageGroupPos.X;
-        (*flyTextArray)[1]->Y = statusDamageGroupPos.Y;
-    }
-
-    public static void SetPositions(IntPtr? addon = null)
-    {
-        if (addon == null)
+        while (this.Logs.Count > Service.Configuration.NbOfLogs)
         {
-            addon = Service.GameGui.GetAddonByName("_FlyText", 1);
-            if (addon == IntPtr.Zero) return;
+            this.Logs.TryDequeue(out _);
         }
-
-        var flyTextArray = (FlyTextArray*)(addon + 0x26C8);
-        var posConfig = Service.Configuration.FlyTextPositions;
-
-        if (posConfig.HealingGroupX != null)
-            (*flyTextArray)[0]->X = posConfig.HealingGroupX.Value;
-        if (posConfig.HealingGroupY != null)
-            (*flyTextArray)[0]->Y = posConfig.HealingGroupY.Value;
-
-        if (posConfig.StatusDamageGroupX != null)
-            (*flyTextArray)[1]->X = posConfig.StatusDamageGroupX.Value;
-        if (posConfig.StatusDamageGroupY != null)
-            (*flyTextArray)[1]->Y = posConfig.StatusDamageGroupY.Value;
-    }
-
-    public void CreateFlyText(FlyTextKind flyTextKind)
-    {
-        if (flyTextKind == FlyTextKind.NamedIconWithItemOutline)
-        {
-            this.AddToScreenLogItemDetour(5442, 4);
-            return;
-        }
-
-        var localPlayer = Service.ClientState.LocalPlayer?.Address.ToInt64();
-        if (localPlayer != null)
-        {
-            this.AddToScreenLogWithScreenLogKindDetour(
-                (Character*)(long)localPlayer,
-                (Character*)(long)localPlayer,
-                flyTextKind,
-                12500, // to discriminate during the filtering
-                1,
-                2555,
-                1111,
-                2222,
-                3333);
-        }
-    }
-
-    public void CreateFlyText(FlyTextLog flyTextLog)
-    {
-        var localPlayer = (Character*)Service.ClientState.LocalPlayer?.Address;
-
-        this.IgnoreLog = flyTextLog;
-        switch (flyTextLog.FlyTextCreationSource)
-        {
-            case FlyTextCreationSource.AddToScreenLogWithScreenLogKind:
-                this.AddToScreenLogWithScreenLogKindDetour(
-                    localPlayer,
-                    localPlayer,
-                    flyTextLog.FlyTextKind,
-                    flyTextLog.Option,
-                    flyTextLog.ActionKind,
-                    flyTextLog.ActionId,
-                    flyTextLog.Val1,
-                    flyTextLog.Val2,
-                    flyTextLog.Val3);
-                break;
-            case FlyTextCreationSource.AddToScreenLogItem:
-                this.AddToScreenLogItemDetour(flyTextLog.ItemId, flyTextLog.Count);
-                break;
-            case FlyTextCreationSource.AddToScreenLogCrafting:
-                this.AddToScreenLogCraftingDetour(localPlayer, flyTextLog.FlyTextKind, flyTextLog.Val);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(flyTextLog), "Tried creating a FlyTextLog from an unknown source");
-        }
-    }
-
-    public void Dispose()
-    {
-        Service.FlyTextGui.FlyTextCreated -= FlyTextCreate;
-        this.addToScreenLogCraftingHook.Dispose();
-        this.addToScreenLogItemHook.Dispose();
-        this.addToScreenLogWithScreenLogKindHook.Dispose();
-        this.addonFlyTextOnRefreshHook.Dispose();
-        ResetPositions();
-    }
-
-    private static bool ShouldFilter(Character* source, Character* target, FlyTextKind flyTextKind)
-    {
-        if (Service.Configuration.FlyTextSettings.TryGetValue(flyTextKind, out var flyTextSetting))
-        {
-            switch (GetFlyTextCharCategory(source))
-            {
-                case FlyTextCharCategory.You:
-                    return ShouldFilter(target, flyTextSetting.SourceYou);
-                case FlyTextCharCategory.Party:
-                    return ShouldFilter(target, flyTextSetting.SourceParty);
-                case FlyTextCharCategory.Others:
-                default:
-                    return ShouldFilter(target, flyTextSetting.SourceOthers);
-            }
-        }
-
-        return false;
-    }
-
-    private static bool ShouldFilter(Character* target, FlyTextTargets flyTextTargets)
-    {
-        switch (GetFlyTextCharCategory(target))
-        {
-            case FlyTextCharCategory.You:
-                return flyTextTargets.HasFlag(FlyTextTargets.You);
-            case FlyTextCharCategory.Party:
-                return flyTextTargets.HasFlag(FlyTextTargets.Party);
-            case FlyTextCharCategory.Others:
-            default:
-                return flyTextTargets.HasFlag(FlyTextTargets.Others);
-        }
-    }
-
-    private static FlyTextCharCategory GetFlyTextCharCategory(Character* character)
-    {
-        var localPlayer = (Character*)Service.ClientState.LocalPlayer?.Address;
-        if (character == localPlayer)
-        {
-            return FlyTextCharCategory.You;
-        }
-
-        if (Util.IsPartyMember(character))
-        {
-            return FlyTextCharCategory.Party;
-        }
-
-        return FlyTextCharCategory.Others;
     }
 
     private long AddonFlyTextOnRefreshDetour(IntPtr addon, void* a2, void* a3)
@@ -268,8 +314,8 @@ public unsafe class FlyTextHandler
         Character* target,
         Character* source,
         FlyTextKind flyTextKind,
-        int option, // 0 = DoT? / 2 = blocked / 3 = parried / 4 = resisted / 5 = default?
-        int actionKind,
+        byte option, // 0 = DoT? / 1 = % increase / 2 = blocked / 3 = parried / 4 = resisted / 5 = default?
+        byte actionKind,
         int actionId,
         int val1,
         int val2,
@@ -277,13 +323,6 @@ public unsafe class FlyTextHandler
     {
         try
         {
-            // preview
-            if (option == 12500)
-            {
-                this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, 5, actionKind, actionId, val1, val2, val3);
-                return;
-            }
-
             var adjustedSource = source;
             if ((Service.Configuration.ShouldAdjustDotSource && flyTextKind == FlyTextKind.AutoAttack && option == 0 && actionKind == 0 && target == source)
                 || (Service.Configuration.ShouldAdjustPetSource && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId))
@@ -297,28 +336,16 @@ public unsafe class FlyTextHandler
             {
                 var flyTextLog = new FlyTextLog
                 {
-                    FlyTextCreationSource = FlyTextCreationSource.AddToScreenLogWithScreenLogKind,
-                    FlyTextKind = flyTextKind,
                     SourceCategory = GetFlyTextCharCategory(adjustedSource),
                     TargetCategory = GetFlyTextCharCategory(target),
-                    Option = option,
-                    ActionKind = actionKind,
-                    ActionId = actionId,
-                    Val1 = val1,
-                    Val2 = val2,
-                    Val3 = val3,
                     HasSourceBeenAdjusted = source != adjustedSource,
+                    WasFiltered = shouldFilter,
+                    IsPartial = true,
                 };
 
-                if (flyTextLog.Equals(this.IgnoreLog))
-                {
-                    this.IgnoreLog = null;
-                    shouldFilter = false;
-                }
-                else
-                {
-                    this.AddLog(flyTextLog);
-                }
+                this.AddLog(flyTextLog);
+                this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, (byte)(option + (shouldFilter ? 150 : 100)), actionKind, actionId, val1, val2, val3);
+                return;
             }
 
             if (shouldFilter)
@@ -334,98 +361,72 @@ public unsafe class FlyTextHandler
         this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, val3);
     }
 
-    private void AddToScreenLogItemDetour(uint itemId, int count)
+    private void* AddToScreenLogDetour(long targetId, FlyTextCreation* flyTextCreation)
     {
         try
         {
-            var localPlayer = (Character*)Service.ClientState.LocalPlayer?.Address;
-            var shouldFilter = ShouldFilter(localPlayer, localPlayer, FlyTextKind.NamedIconWithItemOutline);
+            PluginLog.Information($"FlyTextKind: {(int)flyTextCreation->FlyTextKind} - SourceStyle: {flyTextCreation->SourceStyle} - TargetStyle: {flyTextCreation->TargetStyle} ActionId: {flyTextCreation->ActionId} - ActionKind: {flyTextCreation->ActionKind} - Option: {flyTextCreation->Option} - Val1: {flyTextCreation->Val1} - Val2: {flyTextCreation->Val2} - Val3: {flyTextCreation->Val3}");
 
-            if (this.ShouldLog)
+            bool shouldFilter;
+
+            // classic function
+            if (flyTextCreation->Option >= 100)
             {
-                var flyTextLog = new FlyTextLog
+                // should filter
+                if (flyTextCreation->Option >= 150)
                 {
-                    FlyTextCreationSource = FlyTextCreationSource.AddToScreenLogItem,
-                    FlyTextKind = FlyTextKind.NamedIconWithItemOutline,
-                    SourceCategory = FlyTextCharCategory.You,
-                    TargetCategory = FlyTextCharCategory.You,
-                    ItemId = itemId,
-                    Count = count,
-                };
-
-                if (flyTextLog.Equals(this.IgnoreLog))
-                {
-                    this.IgnoreLog = null;
-                    shouldFilter = false;
+                    flyTextCreation->Option -= 150;
+                    shouldFilter = true;
                 }
                 else
                 {
+                    flyTextCreation->Option -= 100;
+                    shouldFilter = false;
+                }
+
+                if (this.ShouldLog)
+                {
+                    foreach (var flyTextLog in this.Logs)
+                    {
+                        if (flyTextLog.IsPartial)
+                        {
+                            flyTextLog.FlyTextCreation = *flyTextCreation;
+                            flyTextLog.IsPartial = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // item or crafting function
+                var localPlayer = (Character*)Service.ClientState.LocalPlayer?.Address;
+                shouldFilter = ShouldFilter(localPlayer, localPlayer, flyTextCreation->FlyTextKind);
+
+                if (this.ShouldLog)
+                {
+                    var flyTextLog = new FlyTextLog
+                    {
+                        FlyTextCreation = *flyTextCreation,
+                        SourceCategory = FlyTextCharCategory.You,
+                        TargetCategory = FlyTextCharCategory.You,
+                        WasFiltered = shouldFilter,
+                    };
+
                     this.AddLog(flyTextLog);
                 }
             }
 
             if (shouldFilter)
             {
-                return;
+                return (void*)0;
             }
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, "Exception in AddToScreenLogItemDetour");
+            PluginLog.Error(ex, "Exception in AddToScreenLogDetour");
         }
 
-        this.addToScreenLogItemHook.Original(itemId, count);
-    }
-
-    private void AddToScreenLogCraftingDetour(Character* source, FlyTextKind flyTextKind, int val)
-    {
-        try
-        {
-            var localPlayer = (Character*)Service.ClientState.LocalPlayer?.Address;
-            var shouldFilter = ShouldFilter(source, localPlayer, flyTextKind);
-
-            if (this.ShouldLog)
-            {
-                var flyTextLog = new FlyTextLog
-                {
-                    FlyTextCreationSource = FlyTextCreationSource.AddToScreenLogCrafting,
-                    FlyTextKind = flyTextKind,
-                    SourceCategory = GetFlyTextCharCategory(source),
-                    TargetCategory = FlyTextCharCategory.You,
-                    Val = val,
-                };
-
-                if (flyTextLog.Equals(this.IgnoreLog))
-                {
-                    this.IgnoreLog = null;
-                    shouldFilter = false;
-                }
-                else
-                {
-                    this.AddLog(flyTextLog);
-                }
-            }
-
-            if (shouldFilter)
-            {
-                return;
-            }
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Error(ex, "Exception in AddToScreenLogCraftingDetour");
-        }
-
-        this.addToScreenLogCraftingHook.Original(source, flyTextKind, val);
-    }
-
-    private void AddLog(FlyTextLog flyTextLog)
-    {
-        this.Logs.Enqueue(flyTextLog);
-
-        while (this.Logs.Count > Service.Configuration.NbOfLogs)
-        {
-            this.Logs.TryDequeue(out _);
-        }
+        return this.addToScreenLogHook.Original(targetId, flyTextCreation);
     }
 }

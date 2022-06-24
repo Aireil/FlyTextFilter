@@ -1,4 +1,4 @@
-﻿namespace FlyTextFilter.Model;
+﻿namespace FlyTextFilter.Model.FlyTextAdjustments;
 
 public class FlyTextPositions
 {

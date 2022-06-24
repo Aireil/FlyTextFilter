@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Numerics;
 using Dalamud.Interface;
-using FlyTextFilter.GUI.TypesTab;
 using FlyTextFilter.Model;
 using ImGuiNET;
 
@@ -42,7 +41,7 @@ public class LogTab
 
         if (ImGui.BeginTable(
                 "##LogTable",
-                7,
+                8,
                 ImGuiTableFlags.BordersH | ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.ScrollY | ImGuiTableFlags.SizingStretchProp,
                 new Vector2(-1.0f, 600.0f * ImGuiHelpers.GlobalScale)))
         {
@@ -52,26 +51,30 @@ public class LogTab
 
             for (var i = Service.FlyTextHandler.Logs.Count - 1; i >= 0; i--)
             {
+                var flyTextLog = Service.FlyTextHandler.Logs.ElementAt(i);
+                if (flyTextLog.IsPartial)
+                {
+                    continue;
+                }
+
                 ImGui.PushID($"{i}RowLog");
 
                 var hasChanged = false;
 
-                var flyTextLog = Service.FlyTextHandler.Logs.ElementAt(i);
-
                 ImGui.TableNextRow();
                 ImGui.TableSetColumnIndex(0);
                 ImGui.AlignTextToFramePadding();
-                ImGui.Text($"{flyTextLog.FlyTextKind}  ");
+                ImGui.Text($"{flyTextLog.FlyTextCreation.FlyTextKind}  ");
 
                 ImGui.TableNextColumn();
-                if (FlyTextKindData.HasInfo(flyTextLog.FlyTextKind))
+                if (FlyTextKindData.HasInfo(flyTextLog.FlyTextCreation.FlyTextKind))
                 {
                     ImGui.AlignTextToFramePadding();
                     Util.CenterIcon(FontAwesomeIcon.Question);
 
                     if (ImGui.IsItemHovered())
                     {
-                        ImGui.SetTooltip(FlyTextKindData.GetInfoFormatted(flyTextLog.FlyTextKind));
+                        ImGui.SetTooltip(FlyTextKindData.GetInfoFormatted(flyTextLog.FlyTextCreation.FlyTextKind));
                     }
                 }
 
@@ -92,6 +95,9 @@ public class LogTab
                 Util.SetHoverTooltip("Edit");
 
                 ImGui.TableNextColumn();
+                Util.CenterText(flyTextLog.WasFiltered ? "Yes" : "No");
+
+                ImGui.TableNextColumn();
                 ImGui.AlignTextToFramePadding();
                 Util.CenterText(flyTextLog.SourceCategory + (flyTextLog.HasSourceBeenAdjusted ? " (?)" : string.Empty));
                 if (flyTextLog.HasSourceBeenAdjusted)
@@ -105,15 +111,15 @@ public class LogTab
 
                 ImGui.TableNextColumn();
                 ImGui.AlignTextToFramePadding();
-                Util.CenterText(flyTextLog.Val1 + " ");
+                Util.CenterText(flyTextLog.FlyTextCreation.Val1 + " ");
 
-                Service.Configuration.FlyTextSettings.TryGetValue(flyTextLog.FlyTextKind, out var flyTextSetting);
+                Service.Configuration.FlyTextSettings.TryGetValue(flyTextLog.FlyTextCreation.FlyTextKind, out var flyTextSetting);
                 flyTextSetting ??= new FlyTextSetting();
-                hasChanged |= EditPopup.Draw(flyTextLog.FlyTextKind, flyTextSetting);
+                hasChanged |= EditPopup.Draw(flyTextLog.FlyTextCreation.FlyTextKind, flyTextSetting);
 
                 if (hasChanged)
                 {
-                    Service.Configuration.UpdateFlyTextSettings(flyTextLog.FlyTextKind, flyTextSetting);
+                    Service.Configuration.UpdateFlyTextSettings(flyTextLog.FlyTextCreation.FlyTextKind, flyTextSetting);
                     Service.Configuration.Save();
                 }
 
@@ -127,7 +133,7 @@ public class LogTab
     public static void DrawHeader()
     {
         ImGui.TableNextColumn();
-        Util.CenterText("Type");
+        Util.CenterText(" Type ");
         ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
 
         ImGui.TableNextColumn();
@@ -137,11 +143,15 @@ public class LogTab
         ImGui.TableNextColumn();
         Util.CenterText(" Show (?)");
         ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
-        Util.SetHoverTooltip("Some fly texts change color based on different criteria" +
-                             "\nThe created fly text may not appear as it did.");
+        Util.SetHoverTooltip("If you use Damage Info, the created fly text" +
+                             "\nmay not have the same color as it did.");
 
         ImGui.TableNextColumn();
         Util.CenterText(" Edit type ");
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+
+        ImGui.TableNextColumn();
+        Util.CenterText(" Filtered? ");
         ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
 
         ImGui.TableNextColumn();

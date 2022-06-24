@@ -5,6 +5,7 @@ using System.Linq;
 using Dalamud.Configuration;
 using Dalamud.Game.Gui.FlyText;
 using FlyTextFilter.Model;
+using FlyTextFilter.Model.FlyTextAdjustments;
 using Newtonsoft.Json;
 
 #pragma warning disable 618 // obsolete warning
@@ -15,13 +16,13 @@ namespace FlyTextFilter;
 public class PluginConfiguration : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CurrentConfigVersion = 4;
+    public const int CurrentConfigVersion = 5;
 
     public int Version { get; set; } = CurrentConfigVersion;
 
     public HashSet<string> Blacklist = new();
 
-    public FlyTextPositions FlyTextPositions = new();
+    public FlyTextAdjustments FlyTextAdjustments = new();
 
     [JsonConverter(typeof(ConcurrentDictionaryConverter<FlyTextKind, FlyTextSetting>))]
     public ConcurrentDictionary<FlyTextKind, FlyTextSetting> FlyTextSettings = new();
@@ -153,6 +154,13 @@ public class PluginConfiguration : IPluginConfiguration
                 this.Version = 4;
             }
 
+            if (this.Version == 4)
+            {
+                this.FlyTextAdjustments.FlyTextPositions = this.FlyTextPositions;
+
+                this.Version = 5;
+            }
+
             this.Save();
         }
     }
@@ -214,4 +222,7 @@ public class PluginConfiguration : IPluginConfiguration
         var hideFlyTextKindOnOthers = this.HideFlyTextKindOnOthers;
         ShiftOldEnum(ref hideFlyTextKindOnOthers, start, shift);
     }
+
+    [Obsolete("Removed in v5")]
+    public FlyTextPositions FlyTextPositions { private get; set; } = new();
 }
