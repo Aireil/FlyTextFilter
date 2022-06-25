@@ -8,7 +8,7 @@ public struct FlyTextArray
     [StructLayout(LayoutKind.Explicit, Size = 0x30)]
     public struct FlyTextGroup
     {
-        [FieldOffset(0x00)] public long AtkRelatedDataStruct; // *(*((*DataStruct) + 0x10 * sizeof(long))) == AtkComponentNode
+        [FieldOffset(0x00)] public unsafe long* AtkRelatedDataStruct; // **(long**)(*structData + 0x10) == AtkComponentNode
         [FieldOffset(0x08)] public long CurrentNbOfNodes;
         [FieldOffset(0x10)] public float X;
         [FieldOffset(0x14)] public float Y;

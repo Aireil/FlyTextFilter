@@ -75,19 +75,7 @@ public unsafe class FlyTextHandler
 
     public static void SetPositions()
     {
-        var atkStage = FFXIVClientStructs.FFXIV.Component.GUI.AtkStage.GetSingleton();
-        if (atkStage == null)
-        {
-            return;
-        }
-
-        var unitMgr = atkStage->RaptureAtkUnitManager;
-        if (unitMgr == null)
-        {
-            return;
-        }
-
-        var addon = (IntPtr)unitMgr->GetAddonById(79);
+        var addon = Service.GameGui.GetAddonByName("_FlyText", 1);
         if (addon == IntPtr.Zero)
         {
             return;
