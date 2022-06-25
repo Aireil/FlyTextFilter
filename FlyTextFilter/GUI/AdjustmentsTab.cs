@@ -1,5 +1,7 @@
 ﻿using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface.Colors;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FlyTextFilter.Model.FlyTextAdjustments;
 using ImGuiNET;
 
@@ -7,7 +9,7 @@ namespace FlyTextFilter.GUI;
 
 public class AdjustmentsTab
 {
-    public static void Draw()
+    public static unsafe void Draw()
     {
         ImGui.Text("Positions:");
 
@@ -78,7 +80,7 @@ public class AdjustmentsTab
                    "\nThere is more involved, but this is a good summary for most.");
 
         tmp = adjustmentsConfig.FlyTextScale ?? 1.0f;
-        if (ImGui.DragFloat("Fly text scaling##FlyTextScaleSlider", ref tmp, 0.005f, 0.01f))
+        if (ImGui.DragFloat("Fly text scaling##FlyTextScaleSlider", ref tmp, 0.005f))
         {
             adjustmentsConfig.FlyTextScale = tmp;
             Service.Configuration.Save();
@@ -86,7 +88,7 @@ public class AdjustmentsTab
         }
 
         tmp = adjustmentsConfig.PopupTextScale ?? 1.0f;
-        if (ImGui.DragFloat("Pop-up text scaling##PopupTextScaleSlider", ref tmp, 0.1f, 0.01f))
+        if (ImGui.DragFloat("Pop-up text scaling##PopupTextScaleSlider", ref tmp, 0.005f))
         {
             adjustmentsConfig.PopupTextScale = tmp;
             Service.Configuration.Save();
@@ -112,6 +114,18 @@ public class AdjustmentsTab
         }
 
         ImGui.Unindent();
+
+        ImGui.Separator();
+
+        if (Framework.Instance()->GetUiModule()->GetConfigModule()->GetValueById((short)ConfigOption.FlyTextDisp)->Int == 0)
+        {
+            ImGui.TextColored(ImGuiColors.DalamudRed, "Fly texts are disabled in the game settings.");
+        }
+
+        if (Framework.Instance()->GetUiModule()->GetConfigModule()->GetValueById((short)ConfigOption.PopUpTextDisp)->Int == 0)
+        {
+            ImGui.TextColored(ImGuiColors.DalamudRed, "Pop-up texts are disabled in the game settings.");
+        }
 
         ImGui.TextColored(ImGuiColors.DalamudGrey, "Tips: ctrl + click to edit values manually, this works in all plugins.");
     }

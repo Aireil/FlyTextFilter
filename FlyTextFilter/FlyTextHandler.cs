@@ -9,6 +9,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FlyTextFilter.Model;
+using ImGuiNET;
 
 namespace FlyTextFilter;
 
@@ -16,9 +17,7 @@ public unsafe class FlyTextHandler
 {
     public bool ShouldLog;
     public ConcurrentQueue<FlyTextLog> Logs = new();
-
-    private delegate long AddonFlyTextOnRefreshDelegate(IntPtr addon, void* a2, void* a3);
-    private readonly Hook<AddonFlyTextOnRefreshDelegate> addonFlyTextOnRefreshHook;
+    private int limiter;
 
     private delegate void AddToScreenLogWithScreenLogKindDelegate(
         Character* target,
@@ -38,11 +37,7 @@ public unsafe class FlyTextHandler
     public FlyTextHandler()
     {
         Service.FlyTextGui.FlyTextCreated += FlyTextCreate;
-
-        var addonFlyTextOnRefreshAddress = Service.SigScanner.ScanText("40 56 48 81 EC ?? ?? ?? ?? 48 8B F1 85 D2");
-        this.addonFlyTextOnRefreshHook =
-            new Hook<AddonFlyTextOnRefreshDelegate>(addonFlyTextOnRefreshAddress, this.AddonFlyTextOnRefreshDetour);
-        this.addonFlyTextOnRefreshHook.Enable();
+        Service.Framework.Update += this.Update;
 
         var addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 3A");
         this.addToScreenLogWithScreenLogKindHook = new Hook<AddToScreenLogWithScreenLogKindDelegate>(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
@@ -78,15 +73,24 @@ public unsafe class FlyTextHandler
         (*flyTextArray)[1]->Y = statusDamageGroupPos.Y;
     }
 
-    public static void SetPositions(IntPtr? addon = null)
+    public static void SetPositions()
     {
-        if (addon == null || addon == IntPtr.Zero)
+        var atkStage = FFXIVClientStructs.FFXIV.Component.GUI.AtkStage.GetSingleton();
+        if (atkStage == null)
         {
-            addon = Service.GameGui.GetAddonByName("_FlyText", 1);
-            if (addon == IntPtr.Zero)
-            {
-                return;
-            }
+            return;
+        }
+
+        var unitMgr = atkStage->RaptureAtkUnitManager;
+        if (unitMgr == null)
+        {
+            return;
+        }
+
+        var addon = (IntPtr)unitMgr->GetAddonById(79);
+        if (addon == IntPtr.Zero)
+        {
+            return;
         }
 
         var flyTextArray = (FlyTextArray*)(addon + 0x26C8);
@@ -121,8 +125,8 @@ public unsafe class FlyTextHandler
             return;
         }
 
-        *(float*)(agent + 76) = 1.0f; // scale fly text
-        *(float*)(agent + 836) = 1.0f; // scale pop-up text
+        *(float*)(agent + 0x4C) = 1.0f; // scale fly text
+        *(float*)(agent + 0x344) = 1.0f; // scale pop-up text
     }
 
     public static void SetScaling(IntPtr? agent = null)
@@ -140,12 +144,12 @@ public unsafe class FlyTextHandler
 
         if (adjustmentsConfig.FlyTextScale != null)
         {
-            *(float*)(agent + 76) = adjustmentsConfig.FlyTextScale.Value; // scale fly text
+            *(float*)(agent + 0x4C) = adjustmentsConfig.FlyTextScale.Value; // scale fly text
         }
 
         if (adjustmentsConfig.PopupTextScale != null)
         {
-            *(float*)(agent + 836) = adjustmentsConfig.PopupTextScale.Value; // scale pop-up text
+            *(float*)(agent + 0x344) = adjustmentsConfig.PopupTextScale.Value; // scale pop-up text
         }
     }
 
@@ -195,10 +199,10 @@ public unsafe class FlyTextHandler
 
     public void Dispose()
     {
+        Service.Framework.Update -= this.Update;
         Service.FlyTextGui.FlyTextCreated -= FlyTextCreate;
         this.addToScreenLogHook.Dispose();
         this.addToScreenLogWithScreenLogKindHook.Dispose();
-        this.addonFlyTextOnRefreshHook.Dispose();
         ResetPositions();
     }
 
@@ -288,6 +292,23 @@ public unsafe class FlyTextHandler
         }
     }
 
+    private void Update(Dalamud.Game.Framework framework)
+    {
+        try
+        {
+            if (this.limiter-- <= 0)
+            {
+                SetPositions();
+                SetScaling();
+                this.limiter = (int)ImGui.GetIO().Framerate * 3;
+            }
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Error in Update");
+        }
+    }
+
     private void AddLog(FlyTextLog flyTextLog)
     {
         this.Logs.Enqueue(flyTextLog);
@@ -298,26 +319,11 @@ public unsafe class FlyTextHandler
         }
     }
 
-    private long AddonFlyTextOnRefreshDetour(IntPtr addon, void* a2, void* a3)
-    {
-        try
-        {
-            SetPositions(addon);
-            SetScaling();
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Error(ex, "Exception in AddonFlyTextOnRefreshDetour");
-        }
-
-        return this.addonFlyTextOnRefreshHook.Original(addon, a2, a3);
-    }
-
     private void AddToScreenLogWithScreenLogKindDetour(
         Character* target,
         Character* source,
         FlyTextKind flyTextKind,
-        byte option, // 0 = DoT? / 1 = % increase / 2 = blocked / 3 = parried / 4 = resisted / 5 = default?
+        byte option, // 0 = DoT / 1 = % increase / 2 = blocked / 3 = parried / 4 = resisted / 5 = default
         byte actionKind,
         int actionId,
         int val1,
@@ -368,8 +374,6 @@ public unsafe class FlyTextHandler
     {
         try
         {
-            //PluginLog.Information($"FlyTextKind: {(int)flyTextCreation->FlyTextKind} - SourceStyle: {flyTextCreation->SourceStyle} - TargetStyle: {flyTextCreation->TargetStyle} ActionId: {flyTextCreation->ActionId} - ActionKind: {flyTextCreation->ActionKind} - Option: {flyTextCreation->Option} - Val1: {flyTextCreation->Val1} - Val2: {flyTextCreation->Val2} - Val3: {flyTextCreation->Val3}");
-
             bool shouldFilter;
 
             // classic function

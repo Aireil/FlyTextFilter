@@ -8,11 +8,12 @@ namespace FlyTextFilter.Model;
  *   1 - is an alliance member
  *   2 - default if not the others
  *   3 - is a battle NPC, is in a duel with local player, or is a player character other than the local player in pvp instance or duel
- * If (source || target) == 0, then the style is the same, regardless of the other value.
- * If (source == 3 && target != 0), then the style is the same, regardless of the target value.
- * If ((source == 1 || source == 2) && target != 0), then the style is the same, regardless of the target value.
- * If (source || target) == 0 => Fly Text
- * else => Popup Text
+ * If (source == 0 || target == 0) { Fly Text } else { Pop-up Text }
+ *
+ * (target == 0) is style 1, red on attacks.
+ * (source == 0 && target == 3) is style 2, yellow on attacks.
+ * (source == 3 && target != 0) is style 3, red on attacks.
+ * ((source == 1 || source == 2) && target != 0) is style 4, blue on attacks.
  * */
 [StructLayout(LayoutKind.Sequential)]
 public struct FlyTextCreation

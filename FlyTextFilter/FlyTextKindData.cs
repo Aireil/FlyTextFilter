@@ -14,7 +14,7 @@ public class FlyTextKindData
             FlyTextKind.AutoAttack,
             new FlyTextKindInfo
             {
-                Info = "Auto attacks, DoTs. If not a DoT, turns blue on other entities if You is not the source.",
+                Info = "Auto attacks, DoTs.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttack, FlyTextKind.CriticalHit, FlyTextKind.DirectHit, FlyTextKind.CriticalDirectHit },
             }
         },
@@ -22,7 +22,7 @@ public class FlyTextKindData
             FlyTextKind.CriticalHit,
             new FlyTextKindInfo
             {
-                Info = "Auto attacks, DoTs. If not a DoT, turns blue on other entities if You is not the source.",
+                Info = "Auto attacks, DoTs.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttack, FlyTextKind.CriticalHit, FlyTextKind.DirectHit, FlyTextKind.CriticalDirectHit },
                 InfoPrefix = "Crit",
             }
@@ -31,7 +31,7 @@ public class FlyTextKindData
             FlyTextKind.DirectHit,
             new FlyTextKindInfo
             {
-                Info = "Auto attacks, DoTs. If not a DoT, turns blue on other entities if You is not the source.",
+                Info = "Auto attacks, DoTs.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttack, FlyTextKind.CriticalHit, FlyTextKind.DirectHit, FlyTextKind.CriticalDirectHit },
                 InfoPrefix = "DH",
             }
@@ -40,7 +40,7 @@ public class FlyTextKindData
             FlyTextKind.CriticalDirectHit,
             new FlyTextKindInfo
             {
-                Info = "Auto attacks, DoTs. If not a DoT, turns blue on other entities if You is not the source.",
+                Info = "Auto attacks, DoTs.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttack, FlyTextKind.CriticalHit, FlyTextKind.DirectHit, FlyTextKind.CriticalDirectHit },
                 InfoPrefix = "Crit DH",
             }
@@ -49,7 +49,7 @@ public class FlyTextKindData
             FlyTextKind.NamedIcon,
             new FlyTextKindInfo
             {
-                Info = "Beneficial status effects. Turns blue (sometimes red) on other entities if You is not the source.",
+                Info = "Beneficial status effects.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedIcon, FlyTextKind.NamedIconFaded },
             }
         },
@@ -143,7 +143,7 @@ public class FlyTextKindData
             FlyTextKind.NamedAttack,
             new FlyTextKindInfo
             {
-                Info = "Damage. Turns blue with no name on other entities if You is not the source.",
+                Info = "Damage.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack, FlyTextKind.NamedCriticalHit, FlyTextKind.NamedDirectHit, FlyTextKind.NamedCriticalDirectHit },
             }
         },
@@ -151,7 +151,7 @@ public class FlyTextKindData
             FlyTextKind.NamedCriticalHit,
             new FlyTextKindInfo
             {
-                Info = "Damage. Turns blue with no name on other entities if You is not the source.",
+                Info = "Damage.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack, FlyTextKind.NamedCriticalHit, FlyTextKind.NamedDirectHit, FlyTextKind.NamedCriticalDirectHit },
                 InfoPrefix = "Crit",
             }
@@ -160,7 +160,7 @@ public class FlyTextKindData
             FlyTextKind.NamedDirectHit,
             new FlyTextKindInfo
             {
-                Info = "Damage. Turns blue with no name on other entities if You is not the source.",
+                Info = "Damage.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack, FlyTextKind.NamedCriticalHit, FlyTextKind.NamedDirectHit, FlyTextKind.NamedCriticalDirectHit },
                 InfoPrefix = "DH",
             }
@@ -169,7 +169,7 @@ public class FlyTextKindData
             FlyTextKind.NamedCriticalDirectHit,
             new FlyTextKindInfo
             {
-                Info = "Damage. Turns blue with no name on other entities if You is not the source.",
+                Info = "Damage.",
                 RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack, FlyTextKind.NamedCriticalHit, FlyTextKind.NamedDirectHit, FlyTextKind.NamedCriticalDirectHit },
                 InfoPrefix = "Crit DH",
             }

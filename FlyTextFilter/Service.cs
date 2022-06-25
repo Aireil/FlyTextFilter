@@ -39,4 +39,6 @@ internal class Service
     internal static GameGui GameGui { get; private set; } = null!;
     [PluginService]
     internal static ObjectTable ObjectTable { get; private set; } = null!;
+    [PluginService]
+    internal static Framework Framework { get; private set; } = null!;
 }

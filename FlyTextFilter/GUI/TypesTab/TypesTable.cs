@@ -51,7 +51,8 @@ public class TypesTable
                 ImGui.TableNextColumn();
                 if (Util.CenterButtonIcon(FontAwesomeIcon.Eye))
                 {
-                    Service.FlyTextHandler.CreateFlyText(flyTextKind, 0, 0);
+                    Service.FlyTextHandler.CreateFlyText(flyTextKind, 0, 3);
+                    Service.FlyTextHandler.CreateFlyText(flyTextKind, 3, 0);
                     Service.FlyTextHandler.CreateFlyText(flyTextKind, 3, 2);
                     Service.FlyTextHandler.CreateFlyText(flyTextKind, 2, 2);
                 }
@@ -175,7 +176,10 @@ public class TypesTable
         ImGui.TableNextColumn();
         Util.CenterText(" Show (?)", 2);
         ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
-        Util.SetHoverTooltip("When possible, spawns one fly text and two pop-up texts.");
+        Util.SetHoverTooltip("When possible, spawns two fly texts and two pop-up texts." +
+                             "\nThis will display all different styles for a type." +
+                             "\nSome types only support fly texts, therefore, only" +
+                             "\ntwo will appear.");
 
         ImGui.TableNextColumn();
         Util.CenterText("   All   ", 2);
