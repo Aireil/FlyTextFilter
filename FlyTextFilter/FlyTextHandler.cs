@@ -166,7 +166,7 @@ public unsafe class FlyTextHandler
                 ActionKind = (byte)(flyTextKind == FlyTextKind.NamedIconWithItemOutline ? 2 : 1),
                 ActionId = actionId,
                 Val1 = val1,
-                Val2 = 0,
+                Val2 = 2222,
                 Val3 = 0,
             };
 
@@ -258,7 +258,7 @@ public unsafe class FlyTextHandler
         ref bool handled)
     {
         // preview
-        if (icon == 22601 && val1 == 1111 && val2 == 2222)
+        if (val1 == 1111 && val2 == 2222)
         {
             return;
         }
