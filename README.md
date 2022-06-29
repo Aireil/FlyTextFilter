@@ -33,4 +33,4 @@ The logging setting is turned off every restart by design, to avoid useless proc
 Adjust fly texts positions and fly/pop-up texts scaling.
 If the distinction between fly and pop-up text is not clear, you can use the `Test` button and change the scaling.
 
-![scaling](https://github.com/Aireil/FlyTextFilter/raw/master/res/types.png)
+![scaling](https://github.com/Aireil/FlyTextFilter/raw/master/res/scaling.png)
