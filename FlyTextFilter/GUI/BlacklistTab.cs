@@ -9,7 +9,7 @@ public class BlacklistTab
 
     public void Draw()
     {
-        ImGui.Text("Any exact match will filter the fly text (e.g. action name, status effect name, etc.).");
+        ImGui.Text("Any entire match will filter the fly text (e.g. action name, status effect name, etc.).");
 
         ImGui.InputText("##addToBlacklist", ref this.addToBlacklist, 100);
         if (ImGui.Button("Add To Blacklist"))

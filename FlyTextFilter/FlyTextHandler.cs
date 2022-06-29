@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Numerics;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Text.SeStringHandling;
@@ -17,7 +18,9 @@ public unsafe class FlyTextHandler
 {
     public bool ShouldLog;
     public ConcurrentQueue<FlyTextLog> Logs = new();
+
     private int limiter;
+    private int? val1Preview;
 
     private delegate void AddToScreenLogWithScreenLogKindDelegate(
         Character* target,
@@ -36,7 +39,7 @@ public unsafe class FlyTextHandler
 
     public FlyTextHandler()
     {
-        Service.FlyTextGui.FlyTextCreated += FlyTextCreate;
+        Service.FlyTextGui.FlyTextCreated += this.FlyTextCreate;
         Service.Framework.Update += this.Update;
 
         var addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 3A");
@@ -166,9 +169,11 @@ public unsafe class FlyTextHandler
                 ActionKind = (byte)(flyTextKind == FlyTextKind.NamedIconWithItemOutline ? 2 : 1),
                 ActionId = actionId,
                 Val1 = val1,
-                Val2 = 2222,
+                Val2 = 0,
                 Val3 = 0,
             };
+
+            this.val1Preview = flyTextCreation.Val1;
 
             this.addToScreenLogHook.Original(targetId, &flyTextCreation);
         }
@@ -181,6 +186,7 @@ public unsafe class FlyTextHandler
         {
             var targetId = localPlayer.Value + 0x1AE0;
             var flyTextCreation = flyTextLog.FlyTextCreation;
+            this.val1Preview = flyTextCreation.Val1;
             this.addToScreenLogHook.Original((long)targetId, &flyTextCreation);
         }
     }
@@ -188,7 +194,7 @@ public unsafe class FlyTextHandler
     public void Dispose()
     {
         Service.Framework.Update -= this.Update;
-        Service.FlyTextGui.FlyTextCreated -= FlyTextCreate;
+        Service.FlyTextGui.FlyTextCreated -= this.FlyTextCreate;
         this.addToScreenLogHook.Dispose();
         this.addToScreenLogWithScreenLogKindHook.Dispose();
         ResetPositions();
@@ -246,8 +252,8 @@ public unsafe class FlyTextHandler
         return FlyTextCharCategory.Others;
     }
 
-    private static void FlyTextCreate(
-        ref FlyTextKind kind,
+    private void FlyTextCreate(
+        ref FlyTextKind flyTextKind,
         ref int val1,
         ref int val2,
         ref SeString text1,
@@ -257,26 +263,38 @@ public unsafe class FlyTextHandler
         ref float yOffset,
         ref bool handled)
     {
-        // preview
-        if (val1 == 1111 && val2 == 2222)
+        if (!Service.Configuration.Blacklist.Any())
         {
             return;
         }
 
+        // preview
+        if (this.val1Preview != null && val1 == this.val1Preview)
+        {
+            this.val1Preview = null;
+            return;
+        }
+
+        var text1Adjusted = text1.ToString();
+
         // status effects
         if (text1.TextValue.StartsWith("+ ") || text1.TextValue.StartsWith("- "))
         {
-            if (Service.Configuration.Blacklist.Contains(text1.TextValue[2..])
-                || Service.Configuration.Blacklist.Contains(text1.TextValue[2..]))
-            {
-                handled = true;
-            }
+            text1Adjusted = text1.TextValue[2..];
         }
 
-        if (Service.Configuration.Blacklist.Contains(text1.TextValue)
+        if (Service.Configuration.Blacklist.Contains(text1Adjusted)
             || Service.Configuration.Blacklist.Contains(text2.TextValue))
         {
             handled = true;
+            if (this.ShouldLog)
+            {
+                var last = this.Logs.LastOrDefault();
+                if (last != null && last.FlyTextCreation.FlyTextKind == flyTextKind && last.FlyTextCreation.Val1 == val1)
+                {
+                    last.WasFiltered = true;
+                }
+            }
         }
     }
 

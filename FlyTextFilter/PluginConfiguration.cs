@@ -20,7 +20,7 @@ public class PluginConfiguration : IPluginConfiguration
 
     public int Version { get; set; } = CurrentConfigVersion;
 
-    public HashSet<string> Blacklist = new();
+    public HashSet<string> Blacklist = new(StringComparer.OrdinalIgnoreCase);
 
     public FlyTextAdjustments FlyTextAdjustments = new();
 
