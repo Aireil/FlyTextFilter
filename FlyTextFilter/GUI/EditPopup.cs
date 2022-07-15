@@ -20,30 +20,16 @@ public class EditPopup
 
             hasChanged |= Util.CheckboxFlagAll("Filter all##CheckboxEdit", ref flyTextSetting);
 
-            if (ImGui.BeginTable("PopupEditTable", 2, ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.SizingStretchProp))
+            if (ImGui.BeginTable("PopupEditTable", 2, ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.SizingStretchProp))
             {
                 ImGui.TableNextColumn();
                 ImGui.Text("(From) Source");
                 ImGui.TableNextColumn();
                 ImGui.Text("(To) Target");
 
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                ImGui.Text("You");
-                ImGui.TableNextColumn();
-                hasChanged |= DrawPopupTargetColumn("##DrawPopupTargetColumnSourceYou", ref flyTextSetting.SourceYou);
-
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                ImGui.Text("Party");
-                ImGui.TableNextColumn();
-                hasChanged |= DrawPopupTargetColumn("##DrawPopupTargetColumnSourceParty", ref flyTextSetting.SourceParty);
-
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                ImGui.Text("Others");
-                ImGui.TableNextColumn();
-                hasChanged |= DrawPopupTargetColumn("##DrawPopupTargetColumnSourceOthers", ref flyTextSetting.SourceOthers);
+                hasChanged |= DrawPopupSetting("You", "##DrawPopupSettingSourceYou", ref flyTextSetting.SourceYou);
+                hasChanged |= DrawPopupSetting("Party", "##DrawPopupSettingSourceParty", ref flyTextSetting.SourceParty);
+                hasChanged |= DrawPopupSetting("Others", "##DrawPopupSettingSourceOthers", ref flyTextSetting.SourceOthers);
 
                 ImGui.EndTable();
             }
@@ -54,9 +40,12 @@ public class EditPopup
         return hasChanged;
     }
 
-    private static bool DrawPopupTargetColumn(string id, ref FlyTextTargets flyTextTargets)
+    private static bool DrawPopupSetting(string source, string id, ref FlyTextTargets flyTextTargets)
     {
-        ImGui.Separator();
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+        ImGui.Text(source);
+        ImGui.TableNextColumn();
 
         var hasChanged = false;
         hasChanged |= Util.CheckboxFlag("You" + id, ref flyTextTargets, FlyTextTargets.You);
