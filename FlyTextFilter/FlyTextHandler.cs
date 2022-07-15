@@ -43,11 +43,11 @@ public unsafe class FlyTextHandler
         Service.Framework.Update += this.Update;
 
         var addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 3A");
-        this.addToScreenLogWithScreenLogKindHook = new Hook<AddToScreenLogWithScreenLogKindDelegate>(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
+        this.addToScreenLogWithScreenLogKindHook = Hook<AddToScreenLogWithScreenLogKindDelegate>.FromAddress(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
         this.addToScreenLogWithScreenLogKindHook.Enable();
 
         var addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 68 41 5F 41 5E ");
-        this.addToScreenLogHook = new Hook<AddToScreenLogDelegate>(addToScreenLogAddress, this.AddToScreenLogDetour);
+        this.addToScreenLogHook = Hook<AddToScreenLogDelegate>.FromAddress(addToScreenLogAddress, this.AddToScreenLogDetour);
         this.addToScreenLogHook.Enable();
     }
 
