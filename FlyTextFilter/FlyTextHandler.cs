@@ -16,6 +16,7 @@ namespace FlyTextFilter;
 
 public unsafe class FlyTextHandler
 {
+    public bool HasLoadingFailed;
     public bool ShouldLog;
     public ConcurrentQueue<FlyTextLog> Logs = new();
 
@@ -32,21 +33,34 @@ public unsafe class FlyTextHandler
         int val1,
         int val2,
         int val3);
-    private readonly Hook<AddToScreenLogWithScreenLogKindDelegate> addToScreenLogWithScreenLogKindHook;
+    private readonly Hook<AddToScreenLogWithScreenLogKindDelegate>? addToScreenLogWithScreenLogKindHook;
 
     private delegate void* AddToScreenLogDelegate(long targetId, FlyTextCreation* flyTextCreation);
-    private readonly Hook<AddToScreenLogDelegate> addToScreenLogHook;
+    private readonly Hook<AddToScreenLogDelegate>? addToScreenLogHook;
 
     public FlyTextHandler()
     {
+        IntPtr addToScreenLogWithScreenLogKindAddress;
+        IntPtr addToScreenLogAddress;
+
+        try
+        {
+            addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 3A");
+            addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 68 41 5F 41 5E");
+        }
+        catch (Exception ex)
+        {
+            this.HasLoadingFailed = true;
+            PluginLog.Error(ex, "addToScreenLog sig scan failed.");
+            return;
+        }
+
         Service.FlyTextGui.FlyTextCreated += this.FlyTextCreate;
         Service.Framework.Update += this.Update;
 
-        var addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 3A");
         this.addToScreenLogWithScreenLogKindHook = Hook<AddToScreenLogWithScreenLogKindDelegate>.FromAddress(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
         this.addToScreenLogWithScreenLogKindHook.Enable();
 
-        var addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 68 41 5F 41 5E ");
         this.addToScreenLogHook = Hook<AddToScreenLogDelegate>.FromAddress(addToScreenLogAddress, this.AddToScreenLogDetour);
         this.addToScreenLogHook.Enable();
     }
@@ -175,7 +189,7 @@ public unsafe class FlyTextHandler
 
             this.val1Preview = flyTextCreation.Val1;
 
-            this.addToScreenLogHook.Original(targetId, &flyTextCreation);
+            this.addToScreenLogHook?.Original(targetId, &flyTextCreation);
         }
     }
 
@@ -187,7 +201,7 @@ public unsafe class FlyTextHandler
             var targetId = localPlayer.Value + 0x1AE0;
             var flyTextCreation = flyTextLog.FlyTextCreation;
             this.val1Preview = flyTextCreation.Val1;
-            this.addToScreenLogHook.Original((long)targetId, &flyTextCreation);
+            this.addToScreenLogHook?.Original((long)targetId, &flyTextCreation);
         }
     }
 
@@ -195,8 +209,8 @@ public unsafe class FlyTextHandler
     {
         Service.Framework.Update -= this.Update;
         Service.FlyTextGui.FlyTextCreated -= this.FlyTextCreate;
-        this.addToScreenLogHook.Dispose();
-        this.addToScreenLogWithScreenLogKindHook.Dispose();
+        this.addToScreenLogHook?.Dispose();
+        this.addToScreenLogWithScreenLogKindHook?.Dispose();
         ResetPositions();
     }
 
@@ -359,7 +373,7 @@ public unsafe class FlyTextHandler
                 };
 
                 this.AddLog(flyTextLog);
-                this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, (byte)(option + (shouldFilter ? 150 : 100)), actionKind, actionId, val1, val2, val3);
+                this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, (byte)(option + (shouldFilter ? 150 : 100)), actionKind, actionId, val1, val2, val3);
                 return;
             }
 
@@ -373,7 +387,7 @@ public unsafe class FlyTextHandler
             PluginLog.Error(ex, "Exception in AddScreenLogDetour");
         }
 
-        this.addToScreenLogWithScreenLogKindHook.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, val3);
+        this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, val3);
     }
 
     private void* AddToScreenLogDetour(long targetId, FlyTextCreation* flyTextCreation)
@@ -440,6 +454,6 @@ public unsafe class FlyTextHandler
             PluginLog.Error(ex, "Exception in AddToScreenLogDetour");
         }
 
-        return this.addToScreenLogHook.Original(targetId, flyTextCreation);
+        return this.addToScreenLogHook!.Original(targetId, flyTextCreation);
     }
 }

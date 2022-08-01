@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Dalamud.Logging;
 
@@ -73,6 +74,11 @@ public unsafe class FlyTextKindTests
     public static void RunTests(out bool hasPassed)
     {
         var convertLogMessageIdToCharaLogKind = GetConvertFunction();
+        if (convertLogMessageIdToCharaLogKind == null)
+        {
+            hasPassed = false;
+            return;
+        }
 
         PluginLog.Debug("FlyTextKind test start.");
 
@@ -102,6 +108,10 @@ public unsafe class FlyTextKindTests
     public static void PrintData()
     {
         var convertLogMessageIdToCharaLogKind = GetConvertFunction();
+        if (convertLogMessageIdToCharaLogKind == null)
+        {
+            return;
+        }
 
         var data = new StringBuilder();
         for (var i = -1; i < 10000; i++)
@@ -119,6 +129,16 @@ public unsafe class FlyTextKindTests
 
     private static delegate* unmanaged<int, int*, int> GetConvertFunction()
     {
-        return (delegate* unmanaged<int, int*, int>)Service.SigScanner.ScanText("C7 02 ?? ?? ?? ?? 81 F9");
+        var address = IntPtr.Zero;
+        try
+        {
+            address = Service.SigScanner.ScanText("C7 02 ?? ?? ?? ?? 81 F9");
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "FlyTextKind convert function sig scan failed.");
+        }
+
+        return (delegate* unmanaged<int, int*, int>)address;
     }
 }

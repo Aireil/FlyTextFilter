@@ -30,6 +30,18 @@ internal class ConfigWindow : Window
 
     public override void Draw()
     {
+        if (Service.FlyTextHandler.HasLoadingFailed)
+        {
+            ImGui.Text("Plugin could not load properly. Please report this issue on GitHub:");
+            ImGui.SameLine();
+            if (ImGui.Button("Open the GitHub repo"))
+            {
+                Util.OpenLink("https://github.com/Aireil/FlyTextFilter");
+            }
+
+            return;
+        }
+
         if (ImGui.BeginTabBar("##ConfigTab"))
         {
             if (ImGui.BeginTabItem("Types"))

@@ -122,9 +122,9 @@ public class TypesTable
                             Service.ConfigWindow.UpdateMessage("Import OK.", ImGuiColors.DalamudWhite);
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        PluginLog.Error(e, "Failed to import setting from clipboard.");
+                        PluginLog.Error(ex, "Failed to import setting from clipboard.");
                         Service.ConfigWindow.UpdateMessage("Failed to import setting from clipboard.", ImGuiColors.DalamudRed);
                     }
                 }

@@ -47,9 +47,9 @@ public class TypesTab
                 this.importedFlyTextSettings = ImportExport.ImportFlyTextSettings(ImGui.GetClipboardText());
                 ImGui.OpenPopup("##ConfirmationImportAll");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                PluginLog.Error(e, "Failed to import settings from clipboard.");
+                PluginLog.Error(ex, "Failed to import settings from clipboard.");
                 Service.ConfigWindow.UpdateMessage("Failed to import settings from clipboard.", ImGuiColors.DalamudRed);
             }
         }
