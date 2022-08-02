@@ -3,5 +3,6 @@
   "Name": "FlyTextFilter",
   "Punchline": "Filter fly texts and pop-ups texts based on multiple criteria and allow the adjustment of their positions.",
   "Description": "Filter fly texts and pop-ups texts based on multiple criteria and allow the adjustment of their positions.",
-  "RepoUrl": "https://github.com/Aireil/FlyTextFilter"
+  "RepoUrl": "https://github.com/Aireil/FlyTextFilter",
+  "DalamudApiLevel": 7
 }
