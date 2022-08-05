@@ -132,39 +132,41 @@ public class LogTab
 
     public static void DrawHeader()
     {
+        var headerColor = ImGui.ColorConvertFloat4ToU32(ImGui.GetStyle().Colors[(int)ImGuiCol.TableHeaderBg]);
+
         ImGui.TableNextColumn();
         Util.CenterText(" Type ");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText(" Info ");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText(" Show (?)");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
         Util.SetHoverTooltip("If you use Damage Info, the created fly text" +
                              "\nmay not have the same color as it did.");
 
         ImGui.TableNextColumn();
         Util.CenterText(" Edit type ");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText(" Filtered? ");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText(" Source ");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText(" Target ");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText(" Value (?) ");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
         Util.SetHoverTooltip("Usually contains the displayed value if there is one." +
                              "\nIf there is no value, this represents an id and can be ignored");
     }

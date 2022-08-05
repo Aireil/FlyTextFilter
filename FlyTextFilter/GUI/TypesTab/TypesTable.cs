@@ -165,17 +165,19 @@ public class TypesTable
 
     private static void DrawHeader()
     {
+        var headerColor = ImGui.ColorConvertFloat4ToU32(ImGui.GetStyle().Colors[(int)ImGuiCol.TableHeaderBg]);
+
         ImGui.TableNextColumn();
         Util.CenterText("Type", 2);
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText(" Info ", 2);
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText(" Show (?)", 2);
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
         Util.SetHoverTooltip("When possible, spawns two fly texts and two pop-up texts." +
                              "\nThis will display all different styles for a type." +
                              "\nSome types only support fly texts, therefore, only" +
@@ -183,23 +185,23 @@ public class TypesTable
 
         ImGui.TableNextColumn();
         Util.CenterText("   All   ", 2);
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         DrawTargetsHeader("You");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         DrawTargetsHeader("Party");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         DrawTargetsHeader("Others");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
         Util.CenterText("Misc", 2);
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, 0xFF303033);
+        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
     }
 
     private static void DrawTargetsHeader(string header)
