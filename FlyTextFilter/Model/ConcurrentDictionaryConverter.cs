@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+// ReSharper disable HeapView.PossibleBoxingAllocation
 namespace FlyTextFilter.Model;
 
 public class ConcurrentDictionaryConverter<TKey, TValue> : JsonConverter where TKey : Enum

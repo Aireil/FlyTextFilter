@@ -3,6 +3,7 @@ using Dalamud.IoC;
 using Dalamud.Plugin;
 using FlyTextFilter.GUI;
 
+// ReSharper disable once UnusedType.Global
 namespace FlyTextFilter;
 
 public sealed class FlyTextFilter : IDalamudPlugin
