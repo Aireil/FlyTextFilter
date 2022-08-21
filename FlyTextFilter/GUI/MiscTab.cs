@@ -14,10 +14,15 @@ public class MiscTab
                       "\nThis setting forces all DoTs to have You as source, the goal is to" +
                       "\nbe able to filter Others, without removing your (potential) DoTs.");
 
-        hasChanged |= ImGui.Checkbox("Force You as source for your pet actions", ref Service.Configuration.ShouldAdjustPetSource);
+        hasChanged |= ImGui.Checkbox("Force You as source for your pet's actions", ref Service.Configuration.ShouldAdjustPetSource);
 
         Util.DrawHelp("By default, pet actions have Others as source, this setting" +
-                      "\nforces all pets actions to have You instead.");
+                      "\nforces your pet's actions to have You instead.");
+
+        hasChanged |= ImGui.Checkbox("Force You as source for your chocobo's actions", ref Service.Configuration.ShouldAdjustChocoboSource);
+
+        Util.DrawHelp("By default, chocobo actions have Others as source, this setting" +
+                      "\nforces your chocobo's actions to have You instead.");
 
         if (hasChanged)
         {

@@ -16,7 +16,7 @@ namespace FlyTextFilter;
 public class PluginConfiguration : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CurrentConfigVersion = 5;
+    public const int CurrentConfigVersion = 6;
 
     public int Version { get; set; } = CurrentConfigVersion;
 
@@ -30,6 +30,8 @@ public class PluginConfiguration : IPluginConfiguration
     public bool ShouldAdjustDotSource = true;
 
     public bool ShouldAdjustPetSource = true;
+
+    public bool ShouldAdjustChocoboSource = true;
 
     public int NbOfLogs = 50;
 
@@ -59,7 +61,7 @@ public class PluginConfiguration : IPluginConfiguration
                     }
                 }
 
-                this.Version = 2;
+                this.Version++;
             }
 
             // Endwalker enum changes
@@ -67,7 +69,7 @@ public class PluginConfiguration : IPluginConfiguration
             {
                 this.ShiftOldEnums(21, 2);
 
-                this.Version = 3;
+                this.Version++;
             }
 
             if (this.Version == 3)
@@ -151,14 +153,21 @@ public class PluginConfiguration : IPluginConfiguration
                     this.FlyTextSettings[flyTextKind] = flyTextSetting;
                 }
 
-                this.Version = 4;
+                this.Version++;
             }
 
             if (this.Version == 4)
             {
                 this.FlyTextAdjustments.FlyTextPositions = this.FlyTextPositions;
 
-                this.Version = 5;
+                this.Version++;
+            }
+
+            if (this.Version == 5)
+            {
+                this.ShouldAdjustChocoboSource = this.ShouldAdjustPetSource;
+
+                this.Version++;
             }
 
             this.Save();
