@@ -24,6 +24,8 @@ public unsafe class FlyTextHandler
     private int limiter;
     private int? val1Preview;
 
+    private delegate* unmanaged<long, long> getTargetIdDelegate; // BattleChara_vf84 in 6.2
+
     private delegate void AddToScreenLogWithScreenLogKindDelegate(
         Character* target,
         Character* source,
@@ -41,11 +43,13 @@ public unsafe class FlyTextHandler
 
     public FlyTextHandler()
     {
+        IntPtr getTargetIdAddress;
         IntPtr addToScreenLogWithScreenLogKindAddress;
         IntPtr addToScreenLogAddress;
 
         try
         {
+            getTargetIdAddress = Service.SigScanner.ScanText("48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 74 24");
             addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 3A");
             addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 68 41 5F 41 5E");
         }
@@ -58,6 +62,8 @@ public unsafe class FlyTextHandler
 
         Service.FlyTextGui.FlyTextCreated += this.FlyTextCreate;
         Service.Framework.Update += this.Update;
+
+        this.getTargetIdDelegate = (delegate* unmanaged<long, long>)getTargetIdAddress;
 
         this.addToScreenLogWithScreenLogKindHook = Hook<AddToScreenLogWithScreenLogKindDelegate>.FromAddress(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
         this.addToScreenLogWithScreenLogKindHook.Enable();
@@ -164,7 +170,7 @@ public unsafe class FlyTextHandler
         var localPlayer = Service.ClientState.LocalPlayer?.Address.ToInt64();
         if (localPlayer != null)
         {
-            var targetId = localPlayer.Value + 0x1AE0;
+            var targetId = this.getTargetIdDelegate(localPlayer.Value);
             int val1;
             if (flyTextKind is FlyTextKind.NamedIcon2 or FlyTextKind.NamedIconFaded2)
                 val1 = 3166;
@@ -196,13 +202,13 @@ public unsafe class FlyTextHandler
 
     public void CreateFlyText(FlyTextLog flyTextLog)
     {
-        var localPlayer = Service.ClientState.LocalPlayer?.Address;
-        if (localPlayer != null && localPlayer != IntPtr.Zero)
+        var localPlayer = Service.ClientState.LocalPlayer?.Address.ToInt64();
+        if (localPlayer != null)
         {
-            var targetId = localPlayer.Value + 0x1AE0;
+            var targetId = this.getTargetIdDelegate(localPlayer.Value);
             var flyTextCreation = flyTextLog.FlyTextCreation;
             this.val1Preview = flyTextCreation.Val1;
-            this.addToScreenLogHook?.Original((long)targetId, &flyTextCreation);
+            this.addToScreenLogHook?.Original(targetId, &flyTextCreation);
         }
     }
 

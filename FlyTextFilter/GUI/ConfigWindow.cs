@@ -32,6 +32,7 @@ internal class ConfigWindow : Window
     {
         if (Service.FlyTextHandler.HasLoadingFailed)
         {
+            ImGui.AlignTextToFramePadding();
             ImGui.Text("Plugin could not load properly. Please report this issue on GitHub:");
             ImGui.SameLine();
             if (ImGui.Button("Open the GitHub repo"))
