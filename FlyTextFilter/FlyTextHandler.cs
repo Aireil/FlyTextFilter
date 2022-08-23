@@ -179,6 +179,12 @@ public unsafe class FlyTextHandler
             else
                 val1 = 1111;
 
+            var val2 = 0;
+            if (flyTextKind is FlyTextKind.Exp or FlyTextKind.IslandExp)
+            {
+                val2 = 10;
+            }
+
             var actionId = flyTextKind is FlyTextKind.NamedAttack2 or FlyTextKind.NamedCriticalHit2 ? 16230 : 2555;
 
             var flyTextCreation = new FlyTextCreation
@@ -190,7 +196,7 @@ public unsafe class FlyTextHandler
                 ActionKind = (byte)(flyTextKind == FlyTextKind.NamedIconWithItemOutline ? 2 : 1),
                 ActionId = actionId,
                 Val1 = val1,
-                Val2 = 0,
+                Val2 = val2,
                 Val3 = 0,
             };
 

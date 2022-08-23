@@ -111,7 +111,18 @@ public class LogTab
 
                 ImGui.TableNextColumn();
                 ImGui.AlignTextToFramePadding();
-                Util.CenterText(flyTextLog.FlyTextCreation.Val1 + " ");
+
+                int value;
+                if (flyTextLog.FlyTextCreation.Val1 == 0)
+                {
+                    value = flyTextLog.FlyTextCreation.Val2 == 0 ? flyTextLog.FlyTextCreation.Val3 : flyTextLog.FlyTextCreation.Val2;
+                }
+                else
+                {
+                    value = flyTextLog.FlyTextCreation.Val1;
+                }
+
+                Util.CenterText(value + " ");
 
                 Service.Configuration.FlyTextSettings.TryGetValue(flyTextLog.FlyTextCreation.FlyTextKind, out var flyTextSetting);
                 flyTextSetting ??= new FlyTextSetting();
