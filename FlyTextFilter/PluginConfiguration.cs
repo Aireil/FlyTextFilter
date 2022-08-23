@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Configuration;
 using Dalamud.Game.Gui.FlyText;
+using Dalamud.Logging;
 using FlyTextFilter.Model;
 using FlyTextFilter.Model.FlyTextAdjustments;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ namespace FlyTextFilter;
 public class PluginConfiguration : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CurrentConfigVersion = 6;
+    public const int CurrentConfigVersion = 7;
 
     public int Version { get; set; } = CurrentConfigVersion;
 
@@ -170,6 +171,14 @@ public class PluginConfiguration : IPluginConfiguration
                 this.Version++;
             }
 
+            // 6.2 enum changes
+            if (this.Version == 6)
+            {
+                this.ShiftEnums(15, 1);
+
+                this.Version++;
+            }
+
             this.Save();
         }
     }
@@ -183,6 +192,22 @@ public class PluginConfiguration : IPluginConfiguration
         else
         {
             this.FlyTextSettings[flyTextKind] = flyTextSetting;
+        }
+    }
+
+    private void ShiftEnums(int start, int shift)
+    {
+        foreach (var (key, value) in this.FlyTextSettings.ToList().OrderByDescending(pair => pair.Key))
+        {
+            if ((int)key >= start)
+            {
+                this.FlyTextSettings[key + shift] = this.FlyTextSettings[key];
+                this.FlyTextSettings.Remove(key, out _);
+            }
+            else
+            {
+                break;
+            }
         }
     }
 
