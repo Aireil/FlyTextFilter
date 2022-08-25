@@ -88,7 +88,7 @@ public unsafe class FlyTextHandler
             return;
         }
 
-        var flyTextArray = (FlyTextArray*)(addon + 0x26C8);
+        var flyTextArray = (FlyTextArray*)(addon + 0x2710); // AddonFlyText_Initialize
 
         (*flyTextArray)[0]->X = healingGroupPos.X;
         (*flyTextArray)[0]->Y = healingGroupPos.Y;
@@ -105,7 +105,7 @@ public unsafe class FlyTextHandler
             return;
         }
 
-        var flyTextArray = (FlyTextArray*)(addon + 0x26C8);
+        var flyTextArray = (FlyTextArray*)(addon + 0x2710); // AddonFlyText_Initialize
         var posConfig = Service.Configuration.FlyTextAdjustments.FlyTextPositions;
 
         if (posConfig.HealingGroupX != null)
