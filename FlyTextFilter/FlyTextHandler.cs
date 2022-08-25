@@ -21,10 +21,10 @@ public unsafe class FlyTextHandler
     public bool ShouldLog;
     public ConcurrentQueue<FlyTextLog> Logs = new();
 
+    private readonly delegate* unmanaged<long, long> getTargetIdDelegate; // BattleChara_vf84 in 6.2
+
     private int limiter;
     private int? val1Preview;
-
-    private delegate* unmanaged<long, long> getTargetIdDelegate; // BattleChara_vf84 in 6.2
 
     private delegate void AddToScreenLogWithScreenLogKindDelegate(
         Character* target,
@@ -229,7 +229,9 @@ public unsafe class FlyTextHandler
 
     private static bool ShouldFilter(Character* source, Character* target, FlyTextKind flyTextKind)
     {
-        if (Service.Configuration.FlyTextSettings.TryGetValue(flyTextKind, out var flyTextSetting))
+        if (source != null
+            && target != null &&
+            Service.Configuration.FlyTextSettings.TryGetValue(flyTextKind, out var flyTextSetting))
         {
             switch (GetFlyTextCharCategory(source))
             {
@@ -257,15 +259,21 @@ public unsafe class FlyTextHandler
             case FlyTextCharCategory.Party:
                 return flyTextTargets.HasFlag(FlyTextTargets.Party);
             case FlyTextCharCategory.Others:
+                return flyTextTargets.HasFlag(FlyTextTargets.Others);
             case FlyTextCharCategory.None:
             default:
-                return flyTextTargets.HasFlag(FlyTextTargets.Others);
+                return false;
         }
     }
 
     private static FlyTextCharCategory GetFlyTextCharCategory(Character* character)
     {
         var localPlayer = (Character*)Service.ClientState.LocalPlayer?.Address;
+        if (character == null || localPlayer == null)
+        {
+            return FlyTextCharCategory.None;
+        }
+
         if (character == localPlayer)
         {
             return FlyTextCharCategory.You;
@@ -371,6 +379,10 @@ public unsafe class FlyTextHandler
                 || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Chocobo && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId))
             {
                 adjustedSource = (Character*)Service.ClientState.LocalPlayer?.Address;
+                if (adjustedSource == null)
+                {
+                    adjustedSource = source;
+                }
             }
 
             var shouldFilter = ShouldFilter(adjustedSource, target, flyTextKind);

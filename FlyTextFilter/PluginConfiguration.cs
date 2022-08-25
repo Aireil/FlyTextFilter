@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Configuration;
 using Dalamud.Game.Gui.FlyText;
-using Dalamud.Logging;
 using FlyTextFilter.Model;
 using FlyTextFilter.Model.FlyTextAdjustments;
 using Newtonsoft.Json;
@@ -197,7 +196,7 @@ public class PluginConfiguration : IPluginConfiguration
 
     private void ShiftEnums(int start, int shift)
     {
-        foreach (var (key, value) in this.FlyTextSettings.ToList().OrderByDescending(pair => pair.Key))
+        foreach (var (key, _) in this.FlyTextSettings.ToList().OrderByDescending(pair => pair.Key))
         {
             if ((int)key >= start)
             {
