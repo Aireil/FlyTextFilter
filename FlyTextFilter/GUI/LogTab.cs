@@ -39,6 +39,12 @@ public class LogTab
             Service.Configuration.Save();
         }
 
+        ImGui.SameLine();
+        if (ImGui.Button("Clear"))
+        {
+            Service.FlyTextHandler.Logs.Clear();
+        }
+
         if (ImGui.BeginTable(
                 "##LogTable",
                 8,
