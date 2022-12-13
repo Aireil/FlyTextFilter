@@ -32,9 +32,7 @@ internal class ConfigWindow : Window
     {
         if (Service.FlyTextHandler.HasLoadingFailed)
         {
-            ImGui.AlignTextToFramePadding();
-            ImGui.Text("Plugin could not load properly. Please report this issue on GitHub:");
-            ImGui.SameLine();
+            ImGui.Text("The plugin could not load properly, this is expected if the game just had an update.\nFeel free to report this issue on GitHub:");
             if (ImGui.Button("Open the GitHub repo"))
             {
                 Util.OpenLink("https://github.com/Aireil/FlyTextFilter");
