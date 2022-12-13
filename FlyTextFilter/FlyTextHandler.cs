@@ -56,7 +56,7 @@ public unsafe class FlyTextHandler
         catch (Exception ex)
         {
             this.HasLoadingFailed = true;
-            PluginLog.Error(ex, "addToScreenLog sig scan failed.");
+            PluginLog.Error(ex, "Sig scan failed.");
             return;
         }
 
@@ -131,37 +131,31 @@ public unsafe class FlyTextHandler
 
     public static void ResetScaling()
     {
+        SetScaling(1.0f, 1.0f);
+    }
+
+    public static void ApplyScaling()
+    {
+        var adjustmentsConfig = Service.Configuration.FlyTextAdjustments;
+        SetScaling(adjustmentsConfig.FlyTextScale, adjustmentsConfig.PopupTextScale);
+    }
+
+    public static void SetScaling(float? flyTextScale, float? popUpTextScale)
+    {
         var agent = (IntPtr)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
         if (agent == IntPtr.Zero)
         {
             return;
         }
 
-        *(float*)(agent + 0x4C) = 1.0f; // scale fly text
-        *(float*)(agent + 0x344) = 1.0f; // scale pop-up text
-    }
-
-    public static void SetScaling(IntPtr? agent = null)
-    {
-        if (agent == null || agent == IntPtr.Zero)
+        if (flyTextScale != null)
         {
-            agent = (IntPtr)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
-            if (agent == IntPtr.Zero)
-            {
-                return;
-            }
+            *(float*)(agent + 0x4C) = flyTextScale.Value; // scale fly text
         }
 
-        var adjustmentsConfig = Service.Configuration.FlyTextAdjustments;
-
-        if (adjustmentsConfig.FlyTextScale != null)
+        if (popUpTextScale != null)
         {
-            *(float*)(agent + 0x4C) = adjustmentsConfig.FlyTextScale.Value; // scale fly text
-        }
-
-        if (adjustmentsConfig.PopupTextScale != null)
-        {
-            *(float*)(agent + 0x344) = adjustmentsConfig.PopupTextScale.Value; // scale pop-up text
+            *(float*)(agent + 0x344) = popUpTextScale.Value; // scale pop-up text
         }
     }
 
@@ -340,7 +334,7 @@ public unsafe class FlyTextHandler
             if (this.limiter-- <= 0)
             {
                 SetPositions();
-                SetScaling();
+                ApplyScaling();
                 this.limiter = (int)ImGui.GetIO().Framerate * 3;
             }
         }

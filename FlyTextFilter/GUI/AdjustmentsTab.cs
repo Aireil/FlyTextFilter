@@ -84,7 +84,7 @@ public class AdjustmentsTab
         {
             adjustmentsConfig.FlyTextScale = tmp;
             Service.Configuration.Save();
-            FlyTextHandler.SetScaling();
+            FlyTextHandler.ApplyScaling();
         }
 
         tmp = adjustmentsConfig.PopupTextScale ?? 1.0f;
@@ -92,7 +92,7 @@ public class AdjustmentsTab
         {
             adjustmentsConfig.PopupTextScale = tmp;
             Service.Configuration.Save();
-            FlyTextHandler.SetScaling();
+            FlyTextHandler.ApplyScaling();
         }
 
         if (ImGui.Button("Test##TestScaling"))
