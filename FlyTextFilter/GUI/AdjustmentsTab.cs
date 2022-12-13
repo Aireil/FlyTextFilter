@@ -1,6 +1,5 @@
 ﻿using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface.Colors;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FlyTextFilter.Model.FlyTextAdjustments;
 using ImGuiNET;
@@ -21,30 +20,30 @@ public class AdjustmentsTab
 
         var adjustmentsConfig = Service.Configuration.FlyTextAdjustments;
         var posConfig = adjustmentsConfig.FlyTextPositions;
-        var (healingGroupDefaultPos, statusDamageGroupDefaultPos) = FlyTextHandler.GetDefaultPositions();
+        var defaultPosConfig = FlyTextPositions.GetDefaultPositions();
 
-        var tmp = posConfig.HealingGroupX ?? healingGroupDefaultPos.X;
+        var tmp = posConfig.HealingGroupX ?? defaultPosConfig.HealingGroupX!.Value;
         if (ImGui.DragFloat("Healing horizontal##HealingGroupPosXSlider", ref tmp))
         {
             posConfig.HealingGroupX = tmp;
             Service.Configuration.Save();
         }
 
-        tmp = posConfig.HealingGroupY ?? healingGroupDefaultPos.Y;
+        tmp = posConfig.HealingGroupY ?? defaultPosConfig.HealingGroupY!.Value;
         if (ImGui.DragFloat("Healing vertical##HealingGroupPosYSlider", ref tmp))
         {
             posConfig.HealingGroupY = tmp;
             Service.Configuration.Save();
         }
 
-        tmp = posConfig.StatusDamageGroupX ?? statusDamageGroupDefaultPos.X;
+        tmp = posConfig.StatusDamageGroupX ?? defaultPosConfig.StatusDamageGroupX!.Value;
         if (ImGui.DragFloat("Status-Damage horizontal##StatusDamageGroupPosXSlider", ref tmp))
         {
             posConfig.StatusDamageGroupX = tmp;
             Service.Configuration.Save();
         }
 
-        tmp = posConfig.StatusDamageGroupY ?? statusDamageGroupDefaultPos.Y;
+        tmp = posConfig.StatusDamageGroupY ?? defaultPosConfig.StatusDamageGroupY!.Value;
         if (ImGui.DragFloat("Status-Damage vertical##StatusDamageGroupPosYSlider", ref tmp))
         {
             posConfig.StatusDamageGroupY = tmp;
@@ -53,7 +52,7 @@ public class AdjustmentsTab
 
         if (ImGui.Button("Test##TestPositions"))
         {
-            FlyTextHandler.SetPositions();
+            FlyTextHandler.ApplyPositions();
 
             Service.FlyTextHandler.CreateFlyText(FlyTextKind.NamedAttack2, 0, 0);
             Service.FlyTextHandler.CreateFlyText(FlyTextKind.NamedIcon, 0, 0);

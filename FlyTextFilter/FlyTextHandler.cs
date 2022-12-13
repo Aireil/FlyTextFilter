@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Text.SeStringHandling;
@@ -11,6 +10,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FlyTextFilter.Model;
+using FlyTextFilter.Model.FlyTextAdjustments;
 using ImGuiNET;
 
 namespace FlyTextFilter;
@@ -72,32 +72,19 @@ public unsafe class FlyTextHandler
         this.addToScreenLogHook.Enable();
     }
 
-    public static (Vector2 healingGroupPos, Vector2 statusDamageGroupPos) GetDefaultPositions()
-    {
-        var (width, height) = Util.GetScreenSize();
-
-        return (new Vector2(width * (49.0f / 100.0f), height / 2.0f), new Vector2(width * (11.0f / 20.0f), height / 2.0f));
-    }
-
     public static void ResetPositions()
     {
-        var (healingGroupPos, statusDamageGroupPos) = GetDefaultPositions();
-        var addon = Service.GameGui.GetAddonByName("_FlyText", 1);
-        if (addon == IntPtr.Zero)
-        {
-            return;
-        }
-
-        var flyTextArray = (FlyTextArray*)(addon + 0x2710); // AddonFlyText_Initialize
-
-        (*flyTextArray)[0]->X = healingGroupPos.X;
-        (*flyTextArray)[0]->Y = healingGroupPos.Y;
-
-        (*flyTextArray)[1]->X = statusDamageGroupPos.X;
-        (*flyTextArray)[1]->Y = statusDamageGroupPos.Y;
+        var flyTextPositions = FlyTextPositions.GetDefaultPositions();
+        SetPositions(flyTextPositions);
     }
 
-    public static void SetPositions()
+    public static void ApplyPositions()
+    {
+        var flyTextPositions = Service.Configuration.FlyTextAdjustments.FlyTextPositions;
+        SetPositions(flyTextPositions);
+    }
+
+    public static void SetPositions(FlyTextPositions flyTextPositions)
     {
         var addon = Service.GameGui.GetAddonByName("_FlyText", 1);
         if (addon == IntPtr.Zero)
@@ -106,26 +93,25 @@ public unsafe class FlyTextHandler
         }
 
         var flyTextArray = (FlyTextArray*)(addon + 0x2710); // AddonFlyText_Initialize
-        var posConfig = Service.Configuration.FlyTextAdjustments.FlyTextPositions;
 
-        if (posConfig.HealingGroupX != null)
+        if (flyTextPositions.HealingGroupX != null)
         {
-            (*flyTextArray)[0]->X = posConfig.HealingGroupX.Value;
+            (*flyTextArray)[0]->X = flyTextPositions.HealingGroupX.Value;
         }
 
-        if (posConfig.HealingGroupY != null)
+        if (flyTextPositions.HealingGroupY != null)
         {
-            (*flyTextArray)[0]->Y = posConfig.HealingGroupY.Value;
+            (*flyTextArray)[0]->Y = flyTextPositions.HealingGroupY.Value;
         }
 
-        if (posConfig.StatusDamageGroupX != null)
+        if (flyTextPositions.StatusDamageGroupX != null)
         {
-            (*flyTextArray)[1]->X = posConfig.StatusDamageGroupX.Value;
+            (*flyTextArray)[1]->X = flyTextPositions.StatusDamageGroupX.Value;
         }
 
-        if (posConfig.StatusDamageGroupY != null)
+        if (flyTextPositions.StatusDamageGroupY != null)
         {
-            (*flyTextArray)[1]->Y = posConfig.StatusDamageGroupY.Value;
+            (*flyTextArray)[1]->Y = flyTextPositions.StatusDamageGroupY.Value;
         }
     }
 
@@ -333,7 +319,7 @@ public unsafe class FlyTextHandler
         {
             if (this.limiter-- <= 0)
             {
-                SetPositions();
+                ApplyPositions();
                 ApplyScaling();
                 this.limiter = (int)ImGui.GetIO().Framerate * 3;
             }
