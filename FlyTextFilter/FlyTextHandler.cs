@@ -11,20 +11,25 @@ using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FlyTextFilter.Model;
 using FlyTextFilter.Model.FlyTextAdjustments;
-using ImGuiNET;
 
 namespace FlyTextFilter;
 
 public unsafe class FlyTextHandler
 {
-    public bool HasLoadingFailed;
     public bool ShouldLog;
+    public bool HasLoadingFailed;
+    public bool? HasPositionTestFailed;
+    public bool? HasScalingTestFailed;
     public ConcurrentQueue<FlyTextLog> Logs = new();
 
     private readonly delegate* unmanaged<long, long> getTargetIdDelegate; // BattleChara_vf84 in 6.2
-
-    private int limiter;
     private int? val1Preview;
+
+    private delegate void* AddonFlyTextOnSetupDelegate(
+        void* a1,
+        void* a2,
+        void* a3);
+    private readonly Hook<AddonFlyTextOnSetupDelegate>? addonFlyTextOnSetupHook;
 
     private delegate void AddToScreenLogWithScreenLogKindDelegate(
         Character* target,
@@ -38,17 +43,21 @@ public unsafe class FlyTextHandler
         int val3);
     private readonly Hook<AddToScreenLogWithScreenLogKindDelegate>? addToScreenLogWithScreenLogKindHook;
 
-    private delegate void* AddToScreenLogDelegate(long targetId, FlyTextCreation* flyTextCreation);
+    private delegate void* AddToScreenLogDelegate(
+        long targetId,
+        FlyTextCreation* flyTextCreation);
     private readonly Hook<AddToScreenLogDelegate>? addToScreenLogHook;
 
     public FlyTextHandler()
     {
+        IntPtr addonFlyTextOnSetupAddress;
         IntPtr getTargetIdAddress;
         IntPtr addToScreenLogWithScreenLogKindAddress;
         IntPtr addToScreenLogAddress;
 
         try
         {
+            addonFlyTextOnSetupAddress = Service.SigScanner.ScanText("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC 20 80 89");
             getTargetIdAddress = Service.SigScanner.ScanText("48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 74 24");
             addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 3A");
             addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8B 4C 24 ?? 48 33 CC E8 ?? ?? ?? ?? 48 83 C4 68 41 5F 41 5E");
@@ -61,38 +70,61 @@ public unsafe class FlyTextHandler
         }
 
         Service.FlyTextGui.FlyTextCreated += this.FlyTextCreate;
-        Service.Framework.Update += this.Update;
 
         this.getTargetIdDelegate = (delegate* unmanaged<long, long>)getTargetIdAddress;
+
+        this.addonFlyTextOnSetupHook = Hook<AddonFlyTextOnSetupDelegate>.FromAddress(addonFlyTextOnSetupAddress, this.AddonFlyTextOnSetupDetour);
+        this.addonFlyTextOnSetupHook.Enable();
 
         this.addToScreenLogWithScreenLogKindHook = Hook<AddToScreenLogWithScreenLogKindDelegate>.FromAddress(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
         this.addToScreenLogWithScreenLogKindHook.Enable();
 
         this.addToScreenLogHook = Hook<AddToScreenLogDelegate>.FromAddress(addToScreenLogAddress, this.AddToScreenLogDetour);
         this.addToScreenLogHook.Enable();
+
+        this.ApplyPositions();
+        this.ApplyScaling();
     }
 
-    public static void ResetPositions()
+    public void ResetPositions()
     {
-        var flyTextPositions = FlyTextPositions.GetDefaultPositions();
-        SetPositions(flyTextPositions);
+        var defaultFlyTextPositions = FlyTextPositions.GetDefaultPositions();
+        this.SetPositions(defaultFlyTextPositions);
     }
 
-    public static void ApplyPositions()
+    public void ApplyPositions()
     {
         var flyTextPositions = Service.Configuration.FlyTextAdjustments.FlyTextPositions;
-        SetPositions(flyTextPositions);
+        this.SetPositions(flyTextPositions);
     }
 
-    public static void SetPositions(FlyTextPositions flyTextPositions)
+    public void SetPositions(FlyTextPositions flyTextPositions)
     {
         var addon = Service.GameGui.GetAddonByName("_FlyText", 1);
-        if (addon == IntPtr.Zero)
+        if (addon == IntPtr.Zero || this.HasLoadingFailed)
         {
             return;
         }
 
         var flyTextArray = (FlyTextArray*)(addon + 0x2710); // AddonFlyText_Initialize
+
+        if (this.HasPositionTestFailed == null)
+        {
+            var defaultFlyTextPositions = FlyTextPositions.GetDefaultPositions();
+            this.HasPositionTestFailed = false;
+            this.HasPositionTestFailed |= Math.Abs((*flyTextArray)[0]->X - defaultFlyTextPositions.HealingGroupX!.Value) > 0.01f;
+            this.HasPositionTestFailed |= Math.Abs((*flyTextArray)[0]->Y - defaultFlyTextPositions.HealingGroupY!.Value) > 0.01f;
+            this.HasPositionTestFailed |= Math.Abs((*flyTextArray)[1]->X - defaultFlyTextPositions.StatusDamageGroupX!.Value) > 0.01f;
+            this.HasPositionTestFailed |= Math.Abs((*flyTextArray)[1]->Y - defaultFlyTextPositions.StatusDamageGroupY!.Value) > 0.01f;
+
+            if (this.HasPositionTestFailed!.Value)
+            {
+                PluginLog.Error("Position test failed.");
+                this.Dispose();
+                this.HasLoadingFailed = true;
+                return;
+            }
+        }
 
         if (flyTextPositions.HealingGroupX != null)
         {
@@ -115,33 +147,51 @@ public unsafe class FlyTextHandler
         }
     }
 
-    public static void ResetScaling()
+    public void ResetScaling()
     {
-        SetScaling(1.0f, 1.0f);
+        this.SetScaling(1.0f, 1.0f);
     }
 
-    public static void ApplyScaling()
+    public void ApplyScaling()
     {
         var adjustmentsConfig = Service.Configuration.FlyTextAdjustments;
-        SetScaling(adjustmentsConfig.FlyTextScale, adjustmentsConfig.PopupTextScale);
+        this.SetScaling(adjustmentsConfig.FlyTextScale, adjustmentsConfig.PopupTextScale);
     }
 
-    public static void SetScaling(float? flyTextScale, float? popUpTextScale)
+    public void SetScaling(float? flyTextScale, float? popUpTextScale)
     {
         var agent = (IntPtr)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
-        if (agent == IntPtr.Zero)
+        if (agent == IntPtr.Zero || this.HasLoadingFailed)
         {
             return;
         }
 
+        var currFlyTextScale = (float*)(agent + 0x4C);
+        var currPopUpTextScale = (float*)(agent + 0x344);
+
+        if (this.HasScalingTestFailed == null)
+        {
+            this.HasScalingTestFailed = false;
+            this.HasScalingTestFailed |= Math.Abs(*currFlyTextScale - 1.0f) > 0.01f;
+            this.HasScalingTestFailed |= Math.Abs(*currPopUpTextScale - 1.0f) > 0.01f;
+
+            if (this.HasScalingTestFailed!.Value)
+            {
+                PluginLog.Error("Scaling test failed.");
+                this.Dispose();
+                this.HasLoadingFailed = true;
+                return;
+            }
+        }
+
         if (flyTextScale != null)
         {
-            *(float*)(agent + 0x4C) = flyTextScale.Value; // scale fly text
+            *currFlyTextScale = flyTextScale.Value;
         }
 
         if (popUpTextScale != null)
         {
-            *(float*)(agent + 0x344) = popUpTextScale.Value; // scale pop-up text
+            *currPopUpTextScale = popUpTextScale.Value;
         }
     }
 
@@ -200,11 +250,12 @@ public unsafe class FlyTextHandler
 
     public void Dispose()
     {
-        Service.Framework.Update -= this.Update;
         Service.FlyTextGui.FlyTextCreated -= this.FlyTextCreate;
+        this.addonFlyTextOnSetupHook?.Dispose();
         this.addToScreenLogHook?.Dispose();
         this.addToScreenLogWithScreenLogKindHook?.Dispose();
-        ResetPositions();
+        this.ResetPositions();
+        this.ResetScaling();
     }
 
     private static bool ShouldFilter(Character* source, Character* target, FlyTextKind flyTextKind)
@@ -313,23 +364,6 @@ public unsafe class FlyTextHandler
         }
     }
 
-    private void Update(Dalamud.Game.Framework framework)
-    {
-        try
-        {
-            if (this.limiter-- <= 0)
-            {
-                ApplyPositions();
-                ApplyScaling();
-                this.limiter = (int)ImGui.GetIO().Framerate * 3;
-            }
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Error(ex, "Error in Update");
-        }
-    }
-
     private void AddLog(FlyTextLog flyTextLog)
     {
         this.Logs.Enqueue(flyTextLog);
@@ -338,6 +372,22 @@ public unsafe class FlyTextHandler
         {
             this.Logs.TryDequeue(out _);
         }
+    }
+
+    private void* AddonFlyTextOnSetupDetour(void* a1, void* a2, void* a3)
+    {
+        var result = this.addonFlyTextOnSetupHook!.Original(a1, a2, a3);
+        try
+        {
+            this.ApplyPositions();
+            this.ApplyScaling();
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Exception in AddonFlyTextOnSetupDetour");
+        }
+
+        return result;
     }
 
     private void AddToScreenLogWithScreenLogKindDetour(

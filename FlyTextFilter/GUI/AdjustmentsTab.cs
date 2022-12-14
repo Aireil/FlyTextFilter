@@ -59,7 +59,7 @@ public class AdjustmentsTab
         ImGui.SameLine();
         if (ImGui.Button("Reset all positions##ResetPositions"))
         {
-            FlyTextHandler.ResetPositions();
+            Service.FlyTextHandler.ResetPositions();
             Service.Configuration.FlyTextAdjustments.FlyTextPositions = new FlyTextPositions();
             hasPosChanged = true;
         }
@@ -67,7 +67,7 @@ public class AdjustmentsTab
         if (hasPosChanged)
         {
             Service.Configuration.Save();
-            FlyTextHandler.ApplyPositions();
+            Service.FlyTextHandler.ApplyPositions();
             CreateFlyPopupText(true, false);
         }
 
@@ -105,7 +105,7 @@ public class AdjustmentsTab
         ImGui.SameLine();
         if (ImGui.Button("Reset scaling##ResetPositions"))
         {
-            FlyTextHandler.ResetScaling();
+            Service.FlyTextHandler.ResetScaling();
             Service.Configuration.FlyTextAdjustments.FlyTextScale = null;
             Service.Configuration.FlyTextAdjustments.PopupTextScale = null;
             hasPopUpTextPosChanged = true;
@@ -114,7 +114,7 @@ public class AdjustmentsTab
         if (hasPopUpTextPosChanged)
         {
             Service.Configuration.Save();
-            FlyTextHandler.ApplyScaling();
+            Service.FlyTextHandler.ApplyScaling();
             CreateFlyPopupText(true, true);
         }
 
