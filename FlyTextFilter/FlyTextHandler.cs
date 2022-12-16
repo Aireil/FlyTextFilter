@@ -9,6 +9,7 @@ using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FlyTextFilter.Model;
 using FlyTextFilter.Model.FlyTextAdjustments;
 
@@ -84,9 +85,44 @@ public unsafe class FlyTextHandler
         this.ApplyScaling();
     }
 
+    public static FlyTextPositions GetDefaultPositions()
+    {
+        var (width, height) = Util.GetScreenSize();
+        return new FlyTextPositions
+        {
+            HealingGroupX = width * 49.0f / 100.0f,
+            HealingGroupY = height / 2.0f,
+            StatusDamageGroupX = width * 11.0f / 20.0f,
+            StatusDamageGroupY = height / 2.0f,
+        };
+    }
+
+    public static (float flyTextScale, float popUpTextScale) GetDefaultScaling()
+    {
+        var flyTextScale = ConfigModule.Instance()->GetIntValue(ConfigOption.FlyTextDispSize) switch
+        {
+            0 => // maximum
+                1.4f,
+            1 => // large
+                1.2f,
+            _ => 1.0f, // standard
+        };
+
+        var popUpTextScale = ConfigModule.Instance()->GetIntValue(ConfigOption.PopUpTextDispSize) switch
+        {
+            0 => // maximum
+                1.4f,
+            1 => // large
+                1.2f,
+            _ => 1.0f, // standard
+        };
+
+        return (flyTextScale, popUpTextScale);
+    }
+
     public void ResetPositions()
     {
-        var defaultFlyTextPositions = FlyTextPositions.GetDefaultPositions();
+        var defaultFlyTextPositions = GetDefaultPositions();
         this.SetPositions(defaultFlyTextPositions);
     }
 
@@ -129,7 +165,8 @@ public unsafe class FlyTextHandler
 
     public void ResetScaling()
     {
-        this.SetScaling(1.0f, 1.0f);
+        var (defaultFlyTextScale, defaultPopUpTextScale) = GetDefaultScaling();
+        this.SetScaling(defaultFlyTextScale, defaultPopUpTextScale);
     }
 
     public void ApplyScaling()

@@ -20,7 +20,7 @@ public class AdjustmentsTab
 
         var adjustmentsConfig = Service.Configuration.FlyTextAdjustments;
         var posConfig = adjustmentsConfig.FlyTextPositions;
-        var defaultPosConfig = FlyTextPositions.GetDefaultPositions();
+        var defaultPosConfig = FlyTextHandler.GetDefaultPositions();
 
         var hasPosChanged = false;
         var tmp = posConfig.HealingGroupX ?? defaultPosConfig.HealingGroupX!.Value;
@@ -80,17 +80,19 @@ public class AdjustmentsTab
         ImGui.Indent();
 
         ImGui.Text("Fly texts are from or on you, pop-ups are from or on others." +
-                   "\nThere is more involved, but this is a good summary for most.");
+                   "\nThere is more to it, but this is a good summary for most." +
+                   "\nThis value will overwrite the size setting in character configuration.");
 
         var hasPopUpTextPosChanged = false;
-        tmp = adjustmentsConfig.FlyTextScale ?? 1.0f;
+        var (defaultFlyTextScale, defaultPopUpTextScale) = FlyTextHandler.GetDefaultScaling();
+        tmp = adjustmentsConfig.FlyTextScale ?? defaultFlyTextScale;
         if (ImGui.DragFloat("Fly text scaling##FlyTextScaleSlider", ref tmp, 0.005f))
         {
             adjustmentsConfig.FlyTextScale = tmp;
             hasPopUpTextPosChanged = true;
         }
 
-        tmp = adjustmentsConfig.PopupTextScale ?? 1.0f;
+        tmp = adjustmentsConfig.PopupTextScale ?? defaultPopUpTextScale;
         if (ImGui.DragFloat("Pop-up text scaling##PopupTextScaleSlider", ref tmp, 0.005f))
         {
             adjustmentsConfig.PopupTextScale = tmp;
