@@ -18,8 +18,6 @@ public unsafe class FlyTextHandler
 {
     public bool ShouldLog;
     public bool HasLoadingFailed;
-    public bool? HasPositionTestFailed;
-    public bool? HasScalingTestFailed;
     public ConcurrentQueue<FlyTextLog> Logs = new();
 
     private readonly delegate* unmanaged<long, long> getTargetIdDelegate; // BattleChara_vf84 in 6.2
@@ -108,24 +106,6 @@ public unsafe class FlyTextHandler
 
         var flyTextArray = (FlyTextArray*)(addon + 0x2710); // AddonFlyText_Initialize
 
-        if (this.HasPositionTestFailed == null)
-        {
-            var defaultFlyTextPositions = FlyTextPositions.GetDefaultPositions();
-            this.HasPositionTestFailed = false;
-            this.HasPositionTestFailed |= Math.Abs((*flyTextArray)[0]->X - defaultFlyTextPositions.HealingGroupX!.Value) > 0.01f;
-            this.HasPositionTestFailed |= Math.Abs((*flyTextArray)[0]->Y - defaultFlyTextPositions.HealingGroupY!.Value) > 0.01f;
-            this.HasPositionTestFailed |= Math.Abs((*flyTextArray)[1]->X - defaultFlyTextPositions.StatusDamageGroupX!.Value) > 0.01f;
-            this.HasPositionTestFailed |= Math.Abs((*flyTextArray)[1]->Y - defaultFlyTextPositions.StatusDamageGroupY!.Value) > 0.01f;
-
-            if (this.HasPositionTestFailed!.Value)
-            {
-                PluginLog.Error("Position test failed.");
-                this.Dispose();
-                this.HasLoadingFailed = true;
-                return;
-            }
-        }
-
         if (flyTextPositions.HealingGroupX != null)
         {
             (*flyTextArray)[0]->X = flyTextPositions.HealingGroupX.Value;
@@ -168,21 +148,6 @@ public unsafe class FlyTextHandler
 
         var currFlyTextScale = (float*)(agent + 0x4C);
         var currPopUpTextScale = (float*)(agent + 0x344);
-
-        if (this.HasScalingTestFailed == null)
-        {
-            this.HasScalingTestFailed = false;
-            this.HasScalingTestFailed |= Math.Abs(*currFlyTextScale - 1.0f) > 0.01f;
-            this.HasScalingTestFailed |= Math.Abs(*currPopUpTextScale - 1.0f) > 0.01f;
-
-            if (this.HasScalingTestFailed!.Value)
-            {
-                PluginLog.Error("Scaling test failed.");
-                this.Dispose();
-                this.HasLoadingFailed = true;
-                return;
-            }
-        }
 
         if (flyTextScale != null)
         {
