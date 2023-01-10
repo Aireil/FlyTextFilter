@@ -328,6 +328,7 @@ public unsafe class FlyTextHandler
         ref SeString text2,
         ref uint color,
         ref uint icon,
+        ref uint damageTypeIcon,
         ref float yOffset,
         ref bool handled)
     {
