@@ -406,6 +406,12 @@ public unsafe class FlyTextHandler
     {
         try
         {
+            if (Service.Configuration.ShouldDisableDamageTypeIcons
+                && damageType is 1 or 2 or 3)
+            {
+                damageType = 0;
+            }
+
             var adjustedSource = source;
             if ((Service.Configuration.ShouldAdjustDotSource && flyTextKind == FlyTextKind.AutoAttack && option == 0 && actionKind == 0 && target == source)
                 || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId)

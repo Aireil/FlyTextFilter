@@ -24,6 +24,8 @@ public class MiscTab
         Util.DrawHelp("By default, chocobo actions have Others as source, this setting" +
                       "\nforces your chocobo's actions to have You instead.");
 
+        hasChanged |= ImGui.Checkbox("Disable damage type icons", ref Service.Configuration.ShouldDisableDamageTypeIcons);
+
         if (hasChanged)
         {
             Service.Configuration.Save();
