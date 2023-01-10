@@ -118,15 +118,7 @@ public class LogTab
                 ImGui.TableNextColumn();
                 ImGui.AlignTextToFramePadding();
 
-                int value;
-                if (flyTextLog.FlyTextCreation.Val1 == 0)
-                {
-                    value = flyTextLog.FlyTextCreation.Val2 == 0 ? flyTextLog.FlyTextCreation.Val3 : flyTextLog.FlyTextCreation.Val2;
-                }
-                else
-                {
-                    value = flyTextLog.FlyTextCreation.Val1;
-                }
+                var value = flyTextLog.FlyTextCreation.Val1 == 0 ? flyTextLog.FlyTextCreation.Val2 : flyTextLog.FlyTextCreation.Val1;
 
                 Util.CenterText(value + " ");
 

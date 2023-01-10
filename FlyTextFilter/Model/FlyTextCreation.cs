@@ -14,6 +14,12 @@ namespace FlyTextFilter.Model;
  * (source == 0 && target == 3) is style 2, yellow on attacks.
  * (source == 3 && target != 0) is style 3, red on attacks.
  * ((source == 1 || source == 2) && target != 0) is style 4, blue on attacks.
+ *
+ *
+ * Damage type:
+ *   1 - Physical
+ *   2 - Magic
+ *   3 - Unique
  * */
 [StructLayout(LayoutKind.Sequential)]
 public struct FlyTextCreation
@@ -26,5 +32,5 @@ public struct FlyTextCreation
     public int ActionId;
     public int Val1; // status id if icon
     public int Val2;
-    public int Val3;
+    public byte DamageType;
 }

@@ -39,7 +39,7 @@ public unsafe class FlyTextHandler
         int actionId,
         int val1,
         int val2,
-        int val3);
+        byte damageType);
     private readonly Hook<AddToScreenLogWithScreenLogKindDelegate>? addToScreenLogWithScreenLogKindHook;
 
     private delegate void* AddToScreenLogDelegate(
@@ -229,7 +229,7 @@ public unsafe class FlyTextHandler
                 ActionId = actionId,
                 Val1 = val1,
                 Val2 = val2,
-                Val3 = 0,
+                DamageType = 0,
             };
 
             this.val1Preview = flyTextCreation.Val1;
@@ -402,7 +402,7 @@ public unsafe class FlyTextHandler
         int actionId,
         int val1,
         int val2,
-        int val3)
+        byte damageType)
     {
         try
         {
@@ -432,7 +432,7 @@ public unsafe class FlyTextHandler
                 };
 
                 this.AddLog(flyTextLog);
-                this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, (byte)(option + (shouldFilter ? 150 : 100)), actionKind, actionId, val1, val2, val3);
+                this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, (byte)(option + (shouldFilter ? 150 : 100)), actionKind, actionId, val1, val2, damageType);
                 return;
             }
 
@@ -446,7 +446,7 @@ public unsafe class FlyTextHandler
             PluginLog.Error(ex, "Exception in AddScreenLogDetour");
         }
 
-        this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, val3);
+        this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, damageType);
     }
 
     private void* AddToScreenLogDetour(long targetId, FlyTextCreation* flyTextCreation)
