@@ -49,10 +49,10 @@ public unsafe class FlyTextHandler
 
     public FlyTextHandler()
     {
-        IntPtr addonFlyTextOnSetupAddress;
-        IntPtr getTargetIdAddress;
-        IntPtr addToScreenLogWithScreenLogKindAddress;
-        IntPtr addToScreenLogAddress;
+        nint addonFlyTextOnSetupAddress;
+        nint getTargetIdAddress;
+        nint addToScreenLogWithScreenLogKindAddress;
+        nint addToScreenLogAddress;
 
         try
         {
@@ -134,8 +134,8 @@ public unsafe class FlyTextHandler
 
     public void SetPositions(FlyTextPositions flyTextPositions)
     {
-        var addon = Service.GameGui.GetAddonByName("_FlyText", 1);
-        if (addon == IntPtr.Zero || this.HasLoadingFailed)
+        var addon = Service.GameGui.GetAddonByName("_FlyText");
+        if (addon == nint.Zero || this.HasLoadingFailed)
         {
             return;
         }
@@ -177,8 +177,8 @@ public unsafe class FlyTextHandler
 
     public void SetScaling(float? flyTextScale, float? popUpTextScale)
     {
-        var agent = (IntPtr)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
-        if (agent == IntPtr.Zero || this.HasLoadingFailed)
+        var agent = (nint)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
+        if (agent == nint.Zero || this.HasLoadingFailed)
         {
             return;
         }
@@ -199,7 +199,7 @@ public unsafe class FlyTextHandler
 
     public void CreateFlyText(FlyTextKind flyTextKind, byte sourceStyle, byte targetStyle)
     {
-        var localPlayer = Service.ClientState.LocalPlayer?.Address.ToInt64();
+        var localPlayer = Service.ClientState.LocalPlayer?.Address;
         if (localPlayer != null)
         {
             var targetId = this.getTargetIdDelegate(localPlayer.Value);
@@ -240,7 +240,7 @@ public unsafe class FlyTextHandler
 
     public void CreateFlyText(FlyTextLog flyTextLog)
     {
-        var localPlayer = Service.ClientState.LocalPlayer?.Address.ToInt64();
+        var localPlayer = Service.ClientState.LocalPlayer?.Address;
         if (localPlayer != null)
         {
             var targetId = this.getTargetIdDelegate(localPlayer.Value);
@@ -301,7 +301,7 @@ public unsafe class FlyTextHandler
 
     private static FlyTextCharCategory GetFlyTextCharCategory(Character* character)
     {
-        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? IntPtr.Zero);
+        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? nint.Zero);
         if (character == null || localPlayer == null)
         {
             return FlyTextCharCategory.None;
@@ -411,7 +411,7 @@ public unsafe class FlyTextHandler
                 || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId)
                 || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Chocobo && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId))
             {
-                adjustedSource = (Character*)(Service.ClientState.LocalPlayer?.Address ?? IntPtr.Zero);
+                adjustedSource = (Character*)(Service.ClientState.LocalPlayer?.Address ?? nint.Zero);
                 if (adjustedSource == null)
                 {
                     adjustedSource = source;
@@ -486,7 +486,7 @@ public unsafe class FlyTextHandler
             else
             {
                 // item or crafting function
-                var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? IntPtr.Zero);
+                var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? nint.Zero);
                 shouldFilter = ShouldFilter(localPlayer, localPlayer, flyTextCreation->FlyTextKind);
 
                 if (this.ShouldLog)

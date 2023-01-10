@@ -130,7 +130,7 @@ public unsafe class FlyTextKindTests
 
     private static delegate* unmanaged<int, int*, int> GetConvertFunction()
     {
-        var address = IntPtr.Zero;
+        var address = nint.Zero;
         try
         {
             address = Service.SigScanner.ScanText("C7 02 ?? ?? ?? ?? 81 F9");
