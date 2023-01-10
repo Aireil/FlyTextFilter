@@ -140,7 +140,7 @@ public unsafe class FlyTextHandler
             return;
         }
 
-        var flyTextArray = (FlyTextArray*)(addon + 0x2710); // AddonFlyText_Initialize
+        var flyTextArray = (FlyTextArray*)(addon + 11048); // AddonFlyText_Initialize
 
         if (flyTextPositions.HealingGroupX != null)
         {
