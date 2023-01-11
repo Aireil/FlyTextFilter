@@ -406,7 +406,7 @@ public unsafe class FlyTextHandler
     {
         try
         {
-            if (Service.Configuration.ShouldDisableDamageTypeIcons
+            if (Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIcon
                 && damageType is 1 or 2 or 3)
             {
                 damageType = 0;

@@ -10,6 +10,19 @@ public class AdjustmentsTab
 {
     public static unsafe void Draw()
     {
+        var hasChanged = false;
+
+        hasChanged |= ImGui.Checkbox("Hide damage type icon (physical, magic, or unique)", ref Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIcon);
+
+        Util.DrawHelp("If you still want to see the damage type, but not the icon,\nI would recommend using the Damage Info plugin for this.");
+
+        if (hasChanged)
+        {
+            Service.Configuration.Save();
+        }
+
+        ImGui.Separator();
+
         ImGui.Text("Positions:");
 
         ImGui.Indent();

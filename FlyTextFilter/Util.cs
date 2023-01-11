@@ -168,9 +168,10 @@ public class Util
 
     public static void DrawHelp(string helpMessage)
     {
+        SetHoverTooltip(helpMessage);
+
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudGrey, "(?)");
-
         SetHoverTooltip(helpMessage);
     }
 

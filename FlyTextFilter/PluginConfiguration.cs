@@ -33,8 +33,6 @@ public class PluginConfiguration : IPluginConfiguration
 
     public bool ShouldAdjustChocoboSource = true;
 
-    public bool ShouldDisableDamageTypeIcons = false;
-
     public int NbOfLogs = 50;
 
     public void Save()
