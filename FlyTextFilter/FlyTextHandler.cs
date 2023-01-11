@@ -260,6 +260,43 @@ public unsafe class FlyTextHandler
         this.ResetScaling();
     }
 
+    private static bool ShouldHideDamageTypeIcon(FlyTextKind flyTextKind)
+    {
+        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+        switch (flyTextKind)
+        {
+            case FlyTextKind.AutoAttack:
+            case FlyTextKind.CriticalHit:
+            case FlyTextKind.DirectHit:
+            case FlyTextKind.CriticalDirectHit:
+                if (Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIconAutoAttacks)
+                {
+                    return true;
+                }
+
+                break;
+
+            case FlyTextKind.NamedIcon:
+            case FlyTextKind.NamedIcon2:
+                if (Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIconStatusEffects)
+                {
+                    return true;
+                }
+
+                break;
+
+            default:
+                if (Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIconOthers)
+                {
+                    return true;
+                }
+
+                break;
+        }
+
+        return false;
+    }
+
     private static bool ShouldFilter(Character* source, Character* target, FlyTextKind flyTextKind)
     {
         if (source != null
@@ -406,8 +443,7 @@ public unsafe class FlyTextHandler
     {
         try
         {
-            if (Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIcon
-                && damageType is 1 or 2 or 3)
+            if (damageType is 1 or 2 or 3 && ShouldHideDamageTypeIcon(flyTextKind))
             {
                 damageType = 0;
             }

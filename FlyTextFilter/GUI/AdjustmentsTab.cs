@@ -10,16 +10,24 @@ public class AdjustmentsTab
 {
     public static unsafe void Draw()
     {
-        var hasChanged = false;
+        var hasDamageTypeChanged = false;
 
-        hasChanged |= ImGui.Checkbox("Hide damage type icon (physical, magic, or unique)", ref Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIcon);
+        ImGui.Text("Hide damage type icons (physical, magic, or unique) from:");
 
-        Util.DrawHelp("If you still want to see the damage type, but not the icon,\nI would recommend using the Damage Info plugin for this.");
+        Util.DrawHelp("To see the damage type without the icon, use the Damage Info plugin.");
 
-        if (hasChanged)
+        ImGui.Indent();
+
+        hasDamageTypeChanged |= ImGui.Checkbox("Auto attacks", ref Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIconAutoAttacks);
+        hasDamageTypeChanged |= ImGui.Checkbox("Status effects", ref Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIconStatusEffects);
+        hasDamageTypeChanged |= ImGui.Checkbox("Other damage", ref Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIconOthers);
+
+        if (hasDamageTypeChanged)
         {
             Service.Configuration.Save();
         }
+
+        ImGui.Unindent();
 
         ImGui.Separator();
 
