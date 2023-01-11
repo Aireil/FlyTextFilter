@@ -229,7 +229,7 @@ public unsafe class FlyTextHandler
                 ActionId = actionId,
                 Val1 = val1,
                 Val2 = val2,
-                DamageType = 0,
+                DamageType = 1,
             };
 
             this.val1Preview = flyTextCreation.Val1;
