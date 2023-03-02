@@ -1,275 +1,59 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Dalamud.Game.Gui.FlyText;
-using FlyTextFilter.Model;
+﻿using Dalamud.Game.Gui.FlyText;
 
 namespace FlyTextFilter;
 
 public class FlyTextKindData
 {
-    private static readonly Dictionary<FlyTextKind, FlyTextKindInfo> FlyTextKindDataDic = new()
+    public static string GetAlias(FlyTextKind flyTextKind)
     {
+        return flyTextKind switch
         {
-            FlyTextKind.AutoAttack,
-            new FlyTextKindInfo
-            {
-                Info = "Auto attacks, DoTs.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttack, FlyTextKind.CriticalHit, FlyTextKind.DirectHit, FlyTextKind.CriticalDirectHit },
-            }
-        },
-        {
-            FlyTextKind.CriticalHit,
-            new FlyTextKindInfo
-            {
-                Info = "Auto attacks, DoTs.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttack, FlyTextKind.CriticalHit, FlyTextKind.DirectHit, FlyTextKind.CriticalDirectHit },
-                InfoPrefix = "Crit",
-            }
-        },
-        {
-            FlyTextKind.DirectHit,
-            new FlyTextKindInfo
-            {
-                Info = "Auto attacks, DoTs.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttack, FlyTextKind.CriticalHit, FlyTextKind.DirectHit, FlyTextKind.CriticalDirectHit },
-                InfoPrefix = "DH",
-            }
-        },
-        {
-            FlyTextKind.CriticalDirectHit,
-            new FlyTextKindInfo
-            {
-                Info = "Auto attacks, DoTs.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttack, FlyTextKind.CriticalHit, FlyTextKind.DirectHit, FlyTextKind.CriticalDirectHit },
-                InfoPrefix = "Crit DH",
-            }
-        },
-        {
-            FlyTextKind.NamedIcon,
-            new FlyTextKindInfo
-            {
-                Info = "Beneficial status effects.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedIcon, FlyTextKind.NamedIconFaded },
-            }
-        },
-        {
-            FlyTextKind.NamedIconFaded,
-            new FlyTextKindInfo
-            {
-                Info = "Fading Beneficial status effects.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedIcon, FlyTextKind.NamedIconFaded },
-            }
-        },
-        {
-            FlyTextKind.NamedIcon2,
-            new FlyTextKindInfo
-            {
-                Info = "Detrimental status effects.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedIcon2, FlyTextKind.NamedIconFaded2, FlyTextKind.NamedIconFullyResisted, FlyTextKind.NamedIconHasNoEffect, FlyTextKind.NamedIconInvulnerable },
-            }
-        },
-        {
-            FlyTextKind.NamedIconFaded2,
-            new FlyTextKindInfo
-            {
-                Info = "Fading detrimental status effects.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedIcon2, FlyTextKind.NamedIconFaded2, FlyTextKind.NamedIconFullyResisted, FlyTextKind.NamedIconHasNoEffect, FlyTextKind.NamedIconInvulnerable },
-            }
-        },
-        {
-            FlyTextKind.NamedIconFullyResisted,
-            new FlyTextKindInfo
-            {
-                Info = "Resisted detrimental status effects.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedIcon2, FlyTextKind.NamedIconFaded2, FlyTextKind.NamedIconFullyResisted, FlyTextKind.NamedIconHasNoEffect, FlyTextKind.NamedIconInvulnerable },
-            }
-        },
-        {
-            FlyTextKind.NamedIconHasNoEffect,
-            new FlyTextKindInfo
-            {
-                Info = "No effect detrimental status effects.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedIcon2, FlyTextKind.NamedIconFaded2, FlyTextKind.NamedIconFullyResisted, FlyTextKind.NamedIconHasNoEffect, FlyTextKind.NamedIconInvulnerable },
-            }
-        },
-        {
-            FlyTextKind.NamedIconInvulnerable,
-            new FlyTextKindInfo
-            {
-                Info = "Invulnerable detrimental status effects.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedIcon2, FlyTextKind.NamedIconFaded2, FlyTextKind.NamedIconFullyResisted, FlyTextKind.NamedIconHasNoEffect, FlyTextKind.NamedIconInvulnerable },
-            }
-        },
-        {
-            FlyTextKind.Miss,
-            new FlyTextKindInfo
-            {
-                Info = "Text changes to DODGE if the fly text is on You.",
-            }
-        },
-        {
-            FlyTextKind.NamedIconWithItemOutline,
-            new FlyTextKindInfo
-            {
-                Info = "Looted items.",
-            }
-        },
-        {
-            FlyTextKind.NamedAttack2,
-            new FlyTextKindInfo
-            {
-                Info = "Healing.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack2, FlyTextKind.NamedCriticalHit2 },
-            }
-        },
-        {
-            FlyTextKind.NamedCriticalHit2,
-            new FlyTextKindInfo
-            {
-                Info = "Healing.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack2, FlyTextKind.NamedCriticalHit2 },
-                InfoPrefix = "Crit",
-            }
-        },
-        {
-            FlyTextKind.NamedMp2,
-            new FlyTextKindInfo
-            {
-                Info = "MP regeneration.",
-            }
-        },
-        {
-            FlyTextKind.NamedAttack,
-            new FlyTextKindInfo
-            {
-                Info = "Damage.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack, FlyTextKind.NamedCriticalHit, FlyTextKind.NamedDirectHit, FlyTextKind.NamedCriticalDirectHit },
-            }
-        },
-        {
-            FlyTextKind.NamedCriticalHit,
-            new FlyTextKindInfo
-            {
-                Info = "Damage.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack, FlyTextKind.NamedCriticalHit, FlyTextKind.NamedDirectHit, FlyTextKind.NamedCriticalDirectHit },
-                InfoPrefix = "Crit",
-            }
-        },
-        {
-            FlyTextKind.NamedDirectHit,
-            new FlyTextKindInfo
-            {
-                Info = "Damage.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack, FlyTextKind.NamedCriticalHit, FlyTextKind.NamedDirectHit, FlyTextKind.NamedCriticalDirectHit },
-                InfoPrefix = "DH",
-            }
-        },
-        {
-            FlyTextKind.NamedCriticalDirectHit,
-            new FlyTextKindInfo
-            {
-                Info = "Damage.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.NamedAttack, FlyTextKind.NamedCriticalHit, FlyTextKind.NamedDirectHit, FlyTextKind.NamedCriticalDirectHit },
-                InfoPrefix = "Crit DH",
-            }
-        },
-        {
-            FlyTextKind.NamedEp,
-            new FlyTextKindInfo
-            {
-                Info = "Energy points regeneration (used in robots in Alexander/Rival Wings).",
-            }
-        },
-        {
-            FlyTextKind.AutoAttackNoText2,
-            new FlyTextKindInfo
-            {
-                Info = "Crafting quality.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttackNoText2, FlyTextKind.CriticalHit2, FlyTextKind.DirectHit2, FlyTextKind.CriticalDirectHit2 },
-            }
-        },
-        {
-            FlyTextKind.CriticalHit2,
-            new FlyTextKindInfo
-            {
-                Info = "Crafting quality.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttackNoText2, FlyTextKind.CriticalHit2, FlyTextKind.DirectHit2, FlyTextKind.CriticalDirectHit2 },
-                InfoPrefix = "Crit",
-            }
-        },
-        {
-            FlyTextKind.DirectHit2,
-            new FlyTextKindInfo
-            {
-                Info = "Crafting quality.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttackNoText2, FlyTextKind.CriticalHit2, FlyTextKind.DirectHit2, FlyTextKind.CriticalDirectHit2 },
-                InfoPrefix = "DH",
-            }
-        },
-        {
-            FlyTextKind.CriticalDirectHit2,
-            new FlyTextKindInfo
-            {
-                Info = "Crafting quality.",
-                RelatedFlyTextKinds = new List<FlyTextKind> { FlyTextKind.AutoAttackNoText2, FlyTextKind.CriticalHit2, FlyTextKind.DirectHit2, FlyTextKind.CriticalDirectHit2 },
-                InfoPrefix = "Crit DH",
-            }
-        },
-        {
-            FlyTextKind.AutoAttackNoText,
-            new FlyTextKindInfo
-            {
-                Info = "Crafting progress.",
-            }
-        },
-        {
-            FlyTextKind.NamedCp,
-            new FlyTextKindInfo
-            {
-                Info = "CP regeneration (Crafting Points).",
-            }
-        },
-        {
-            FlyTextKind.NamedGp,
-            new FlyTextKindInfo
-            {
-                Info = "GP regeneration (Gathering Points).",
-            }
-        },
-    };
-
-    public static string GetInfoFormatted(FlyTextKind flyTextKind)
-    {
-        if (!FlyTextKindDataDic.TryGetValue(flyTextKind, out var flyTextKindInfo))
-        {
-            return string.Empty;
-        }
-
-        var formattedInfo = new StringBuilder();
-        if (flyTextKindInfo.InfoPrefix != string.Empty)
-        {
-            formattedInfo.Append($"{flyTextKindInfo.InfoPrefix} - ");
-        }
-
-        formattedInfo.AppendLine(flyTextKindInfo.Info);
-        if (flyTextKindInfo.RelatedFlyTextKinds.Any())
-        {
-            formattedInfo.AppendLine("Related type(s):");
-            foreach (var relatedFlyTextKind in flyTextKindInfo.RelatedFlyTextKinds)
-            {
-                if (relatedFlyTextKind != flyTextKind)
-                {
-                    formattedInfo.AppendLine(relatedFlyTextKind.ToString());
-                }
-            }
-        }
-
-        return formattedInfo.ToString();
-    }
-
-    public static bool HasInfo(FlyTextKind flyTextKind)
-    {
-        return FlyTextKindDataDic.ContainsKey(flyTextKind);
+            FlyTextKind.AutoAttack => "Auto Attacks/DoTs",
+            FlyTextKind.CriticalHit => "Auto Attacks/DoTs - Crit",
+            FlyTextKind.DirectHit => "Auto Attacks/DoTs - DH",
+            FlyTextKind.CriticalDirectHit => "Auto Attacks/DoTs - Crit DH",
+            FlyTextKind.NamedIcon => "Beneficial Status",
+            FlyTextKind.NamedIconFaded => "Beneficial Status - Fading",
+            FlyTextKind.NamedIcon2 => "Detrimental Status",
+            FlyTextKind.NamedIconFaded2 => "Detrimental Status - Fading",
+            FlyTextKind.NamedIconFullyResisted => "Detrimental Status - Resisted",
+            FlyTextKind.NamedIconHasNoEffect => "Detrimental Status - No Effect",
+            FlyTextKind.NamedIconInvulnerable => "Detrimental Status - Invulnerable",
+            FlyTextKind.NamedIconWithItemOutline => "Looted Items",
+            FlyTextKind.NamedAttack2 => "Healing",
+            FlyTextKind.NamedCriticalHit2 => "Healing - Crit",
+            FlyTextKind.NamedMp2 => "Regeneration MP",
+            FlyTextKind.NamedAttack => "Damage",
+            FlyTextKind.NamedCriticalHit => "Damage - Crit",
+            FlyTextKind.NamedDirectHit => "Damage - DH",
+            FlyTextKind.NamedCriticalDirectHit => "Damage - Crit DH",
+            FlyTextKind.NamedEp => "Regeneration EP",
+            FlyTextKind.AutoAttackNoText2 => "Crafting Quality",
+            FlyTextKind.CriticalHit2 => "Crafting Quality - Crit",
+            FlyTextKind.DirectHit2 => "Crafting Quality - DH",
+            FlyTextKind.CriticalDirectHit2 => "Crafting Quality - Crit DH",
+            FlyTextKind.AutoAttackNoText => "Crafting Progress",
+            FlyTextKind.NamedCp => "Regeneration CP",
+            FlyTextKind.NamedGp => "Regeneration GP",
+            FlyTextKind.AutoAttackNoText3 => "Unused - Auto3",
+            FlyTextKind.AutoAttackNoText4 => "Unused - Auto4",
+            FlyTextKind.CriticalHit3 => "Unused - Crit3",
+            FlyTextKind.CriticalHit4 => "Unused - Crit4",
+            FlyTextKind.NamedAttack3 => "Unused - Named Attack3",
+            FlyTextKind.NamedCriticalHitWithMp => "Unused - Named Crit MP",
+            FlyTextKind.NamedCriticalHitWithTp => "Unused - Named Crit TP",
+            FlyTextKind.NamedDodge => "Dodge - Named",
+            FlyTextKind.NamedFullyResisted => "Resist - Named",
+            FlyTextKind.NamedHasNoEffect => "No Effect",
+            FlyTextKind.NamedMiss => "Miss - Named",
+            FlyTextKind.NamedMp => "Unused - Named MP",
+            FlyTextKind.NamedMp3 => "Unused - Named MP3",
+            FlyTextKind.NamedTp => "Unused - Named TP",
+            FlyTextKind.NamedTp2 => "Unused - Named TP2",
+            FlyTextKind.NamedTp3 => "Unused - Named TP3",
+            FlyTextKind.IslandExp => "Island Exp",
+            FlyTextKind.None => "Unused - None",
+            _ => flyTextKind.ToString(),
+        };
     }
 }

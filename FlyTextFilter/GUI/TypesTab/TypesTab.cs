@@ -11,6 +11,7 @@ namespace FlyTextFilter.GUI.TypesTab;
 
 public class TypesTab
 {
+    private readonly TypesTable typesTable = new();
     private ConcurrentDictionary<FlyTextKind, FlyTextSetting>? importedFlyTextSettings;
 
     public void Draw()
@@ -61,7 +62,7 @@ public class TypesTab
         ImGui.AlignTextToFramePadding();
         Service.ConfigWindow.DrawMessage();
 
-        TypesTable.Draw();
+        this.typesTable.Draw();
     }
 
     private static void DrawConfirmationDeleteAllPopup()

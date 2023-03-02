@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Game.Gui.FlyText;
@@ -13,11 +14,13 @@ namespace FlyTextFilter.GUI.TypesTab;
 
 public class TypesTable
 {
-    public static void Draw()
+    private readonly IOrderedEnumerable<KeyValuePair<FlyTextKind, string>> flyTextKindOrder = ((FlyTextKind[])Enum.GetValues(typeof(FlyTextKind))).ToDictionary(x => x, FlyTextKindData.GetAlias).ToList().OrderBy(x => x.Value);
+
+    public void Draw()
     {
         if (ImGui.BeginTable(
                 "##TableKinds",
-                8,
+                7,
                 ImGuiTableFlags.BordersH | ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.ScrollY | ImGuiTableFlags.SizingStretchProp,
                 new Vector2(-1.0f, 600.0f * ImGuiHelpers.GlobalScale)))
         {
@@ -25,7 +28,7 @@ public class TypesTable
 
             DrawHeader();
 
-            foreach (var flyTextKind in ((FlyTextKind[])Enum.GetValues(typeof(FlyTextKind))).OrderBy(x => x.ToString()))
+            foreach (var (flyTextKind, flyTextKindAlias) in this.flyTextKindOrder)
             {
                 ImGui.PushID($"{flyTextKind}RowTypesType");
 
@@ -34,19 +37,7 @@ public class TypesTable
                 ImGui.TableNextRow();
                 ImGui.TableSetColumnIndex(0);
                 ImGui.AlignTextToFramePadding();
-                ImGui.Text($"{flyTextKind}  ");
-
-                ImGui.TableNextColumn();
-                if (FlyTextKindData.HasInfo(flyTextKind))
-                {
-                    ImGui.AlignTextToFramePadding();
-                    Util.CenterIcon(FontAwesomeIcon.Question);
-
-                    if (ImGui.IsItemHovered())
-                    {
-                        ImGui.SetTooltip(FlyTextKindData.GetInfoFormatted(flyTextKind));
-                    }
-                }
+                ImGui.Text($"{flyTextKindAlias}  ");
 
                 ImGui.TableNextColumn();
                 if (Util.CenterButtonIcon(FontAwesomeIcon.Eye))
@@ -169,10 +160,6 @@ public class TypesTable
 
         ImGui.TableNextColumn();
         Util.CenterText("Type", 2);
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
-
-        ImGui.TableNextColumn();
-        Util.CenterText(" Info ", 2);
         ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();

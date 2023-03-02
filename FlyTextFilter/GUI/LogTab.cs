@@ -47,7 +47,7 @@ public class LogTab
 
         if (ImGui.BeginTable(
                 "##LogTable",
-                8,
+                7,
                 ImGuiTableFlags.BordersH | ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.ScrollY | ImGuiTableFlags.SizingStretchProp,
                 new Vector2(-1.0f, 600.0f * ImGuiHelpers.GlobalScale)))
         {
@@ -70,19 +70,7 @@ public class LogTab
                 ImGui.TableNextRow();
                 ImGui.TableSetColumnIndex(0);
                 ImGui.AlignTextToFramePadding();
-                ImGui.Text($"{flyTextLog.FlyTextCreation.FlyTextKind}  ");
-
-                ImGui.TableNextColumn();
-                if (FlyTextKindData.HasInfo(flyTextLog.FlyTextCreation.FlyTextKind))
-                {
-                    ImGui.AlignTextToFramePadding();
-                    Util.CenterIcon(FontAwesomeIcon.Question);
-
-                    if (ImGui.IsItemHovered())
-                    {
-                        ImGui.SetTooltip(FlyTextKindData.GetInfoFormatted(flyTextLog.FlyTextCreation.FlyTextKind));
-                    }
-                }
+                ImGui.Text($"{FlyTextKindData.GetAlias(flyTextLog.FlyTextCreation.FlyTextKind)}  ");
 
                 ImGui.TableNextColumn();
                 if (Util.CenterButtonIcon(FontAwesomeIcon.Eye))
@@ -145,10 +133,6 @@ public class LogTab
 
         ImGui.TableNextColumn();
         Util.CenterText(" Type ");
-        ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
-
-        ImGui.TableNextColumn();
-        Util.CenterText(" Info ");
         ImGui.TableSetBgColor(ImGuiTableBgTarget.CellBg, headerColor);
 
         ImGui.TableNextColumn();
