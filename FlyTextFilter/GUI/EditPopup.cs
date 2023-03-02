@@ -11,7 +11,7 @@ public class EditPopup
         var hasChanged = false;
         if (ImGui.BeginPopup("##PopupEditKind"))
         {
-            ImGui.Text($"Editing {flyTextKind}");
+            ImGui.Text($"Editing {FlyTextKindData.GetAlias(flyTextKind)}");
             ImGui.Text("Checked = filtered.");
             Util.DrawHelp("For each source (You|Party|Others), 3 possible targets (Y|P|O)." +
                           "\nTo filter the fly text coming from source to target, check the corresponding checkbox." +
