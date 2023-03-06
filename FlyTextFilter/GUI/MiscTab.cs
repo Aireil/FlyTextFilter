@@ -24,6 +24,14 @@ public class MiscTab
         Util.DrawHelp("By default, chocobo actions have Others as source, this setting" +
                       "\nforces your chocobo's actions to have You instead.");
 
+        ImGui.Separator();
+
+        hasChanged |= ImGui.Checkbox("Help to find unknown types", ref Service.Configuration.IsExplorer);
+
+        Util.DrawHelp("Some type sources are still unknown, if this setting is enabled" +
+                      "\nit will print in chat when you encounter one of those unknown type." +
+                      "\nThis will only print it once per type per game session.");
+
         if (hasChanged)
         {
             Service.Configuration.Save();

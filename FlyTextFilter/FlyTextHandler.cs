@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Logging;
+using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -443,6 +445,23 @@ public unsafe class FlyTextHandler
     {
         try
         {
+            if (this.IsExplorerAndUnknownType(flyTextKind))
+            {
+                try
+                {
+                    this.explorerString = $"K{(uint)flyTextKind}"
+                                         + $"T{Service.ClientState.TerritoryType}"
+                                         + $"A{actionId}"
+                                         + $"S{(source->GameObject.IsCharacter() ? "-" : MemoryHelper.ReadSeStringNullTerminated((nint)source->GameObject.Name))}"
+                                         + $"T{(source->GameObject.IsCharacter() ? "-" : MemoryHelper.ReadSeStringNullTerminated((nint)target->GameObject.Name))}";
+                    PluginLog.Information(this.explorerString);
+                }
+                catch
+                {
+                    PluginLog.Information("Unknown type found part I: failed to get info");
+                }
+            }
+
             if (damageType is 1 or 2 or 3 && ShouldHideDamageTypeIcon(flyTextKind))
             {
                 damageType = 0;
@@ -491,10 +510,45 @@ public unsafe class FlyTextHandler
         this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, damageType);
     }
 
+    private readonly List<FlyTextKind> seenExplorer = new();
+    private string? explorerString;
+
+    private bool IsExplorerAndUnknownType(FlyTextKind flyTextKind)
+    {
+        if (!Service.Configuration.IsExplorer)
+        {
+            return false;
+        }
+
+        // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+        switch (flyTextKind)
+        {
+            case FlyTextKind.AutoAttackNoText3:
+            case FlyTextKind.AutoAttackNoText4:
+            case FlyTextKind.CriticalHit3:
+            case FlyTextKind.CriticalHit4:
+            case FlyTextKind.NamedCriticalHitWithMp:
+            case FlyTextKind.NamedMp:
+            case FlyTextKind.NamedMp3:
+                return !this.seenExplorer.Contains(flyTextKind);
+        }
+
+        return false;
+    }
+
     private void* AddToScreenLogDetour(long targetId, FlyTextCreation* flyTextCreation)
     {
         try
         {
+            if (this.IsExplorerAndUnknownType(flyTextCreation->FlyTextKind))
+            {
+                PluginLog.Information($"Unknown type found part II: {flyTextCreation->FlyTextKind}");
+                Service.ChatGui.PrintError($"[FlyTextFilter] You found the unknown type: {flyTextCreation->FlyTextKind}! Please copy the text in the next message and ping Aireil#8310 on Discord with it or send it as a feedback in the installer. Thank you!");
+                Service.ChatGui.PrintError($"\"K{(uint)flyTextCreation->FlyTextKind}{this.explorerString}\"");
+                this.explorerString = null;
+                this.seenExplorer.Add(flyTextCreation->FlyTextKind);
+            }
+
             bool shouldFilter;
 
             // classic function
