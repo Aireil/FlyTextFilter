@@ -528,7 +528,6 @@ public unsafe class FlyTextHandler
             case FlyTextKind.CriticalHit3:
             case FlyTextKind.CriticalHit4:
             case FlyTextKind.NamedCriticalHitWithMp:
-            case FlyTextKind.NamedMp:
             case FlyTextKind.NamedMp3:
                 return !this.seenExplorer.Contains(flyTextKind);
         }

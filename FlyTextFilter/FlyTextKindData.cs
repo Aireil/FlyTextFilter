@@ -46,7 +46,7 @@ public class FlyTextKindData
             FlyTextKind.NamedFullyResisted => "Resist - Named",
             FlyTextKind.NamedHasNoEffect => "No Effect",
             FlyTextKind.NamedMiss => "Miss - Named",
-            FlyTextKind.NamedMp => "Unused - Named MP",
+            FlyTextKind.NamedMp => "MP Drain",
             FlyTextKind.NamedMp3 => "Unused - Named MP3",
             FlyTextKind.NamedTp => "Unused - Named TP",
             FlyTextKind.NamedTp2 => "Unused - Named TP2",
