@@ -258,8 +258,15 @@ public unsafe class FlyTextHandler
         this.addonFlyTextOnSetupHook?.Dispose();
         this.addToScreenLogHook?.Dispose();
         this.addToScreenLogWithScreenLogKindHook?.Dispose();
-        this.ResetPositions();
-        this.ResetScaling();
+        if (!Service.Configuration.FlyTextAdjustments.IsDefaultPositions())
+        {
+            this.ResetPositions();
+        }
+
+        if (!Service.Configuration.FlyTextAdjustments.IsDefaultScaling())
+        {
+            this.ResetScaling();
+        }
     }
 
     private static bool ShouldHideDamageTypeIcon(FlyTextKind flyTextKind)
