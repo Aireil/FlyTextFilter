@@ -459,8 +459,8 @@ public unsafe class FlyTextHandler
                     this.explorerString = $"K{(uint)flyTextKind}"
                                          + $"T{Service.ClientState.TerritoryType}"
                                          + $"A{actionId}"
-                                         + $"S{(source->GameObject.IsCharacter() ? "-" : MemoryHelper.ReadSeStringNullTerminated((nint)source->GameObject.Name))}"
-                                         + $"T{(source->GameObject.IsCharacter() ? "-" : MemoryHelper.ReadSeStringNullTerminated((nint)target->GameObject.Name))}";
+                                         + $"S{(source->GameObject.ObjectKind == 1 ? "-" : $"\"{MemoryHelper.ReadSeStringNullTerminated((nint)source->GameObject.Name)}\"")}"
+                                         + $"T{(target->GameObject.ObjectKind == 1 ? "-" : $"\"{MemoryHelper.ReadSeStringNullTerminated((nint)target->GameObject.Name)}\"")}";
                     PluginLog.Information(this.explorerString);
                 }
                 catch
@@ -532,7 +532,6 @@ public unsafe class FlyTextHandler
         {
             case FlyTextKind.AutoAttackNoText3:
             case FlyTextKind.CriticalHit4:
-            case FlyTextKind.NamedAttack3:
             case FlyTextKind.NamedCriticalHitWithMp:
             case FlyTextKind.NamedMp3:
                 return !this.seenExplorer.Contains(flyTextKind);

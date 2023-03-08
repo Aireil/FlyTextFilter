@@ -39,7 +39,7 @@ public class FlyTextKindData
             FlyTextKind.AutoAttackNoText4 => "Collectability",
             FlyTextKind.CriticalHit3 => "Collectability - Crit",
             FlyTextKind.CriticalHit4 => "Unused - Crit4",
-            FlyTextKind.NamedAttack3 => "Unused - Named Attack3",
+            FlyTextKind.NamedAttack3 => "Lifesteal",
             FlyTextKind.NamedCriticalHitWithMp => "Unused - Named Crit MP",
             FlyTextKind.NamedCriticalHitWithTp => "Unused - Named Crit TP",
             FlyTextKind.NamedDodge => "Dodge - Named",
