@@ -525,6 +525,7 @@ public unsafe class FlyTextHandler
         {
             case FlyTextKind.AutoAttackNoText3:
             case FlyTextKind.CriticalHit4:
+            case FlyTextKind.NamedAttack3:
             case FlyTextKind.NamedCriticalHitWithMp:
             case FlyTextKind.NamedMp3:
                 return !this.seenExplorer.Contains(flyTextKind);
