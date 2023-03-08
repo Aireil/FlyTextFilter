@@ -524,8 +524,6 @@ public unsafe class FlyTextHandler
         switch (flyTextKind)
         {
             case FlyTextKind.AutoAttackNoText3:
-            case FlyTextKind.AutoAttackNoText4:
-            case FlyTextKind.CriticalHit3:
             case FlyTextKind.CriticalHit4:
             case FlyTextKind.NamedCriticalHitWithMp:
             case FlyTextKind.NamedMp3:
