@@ -101,23 +101,31 @@ public unsafe class FlyTextHandler
 
     public static (float flyTextScale, float popUpTextScale) GetDefaultScaling()
     {
-        var flyTextScale = ConfigModule.Instance()->GetIntValue(ConfigOption.FlyTextDispSize) switch
+        var flyTextScale = 1.0f;
+        if (GameConfig.UiConfig.TryGetUInt(ConfigOption.FlyTextDispSize, out var flyTextDispSize))
         {
-            0 => // maximum
-                1.4f,
-            1 => // large
-                1.2f,
-            _ => 1.0f, // standard
-        };
+            flyTextScale = flyTextDispSize switch
+            {
+                2 => // maximum
+                    1.4f,
+                1 => // large
+                    1.2f,
+                _ => 1.0f, // standard
+            };
+        }
 
-        var popUpTextScale = ConfigModule.Instance()->GetIntValue(ConfigOption.PopUpTextDispSize) switch
+        var popUpTextScale = 1.0f;
+        if (GameConfig.UiConfig.TryGetUInt(ConfigOption.PopUpTextDispSize, out var popUpTextDispSize))
         {
-            0 => // maximum
-                1.4f,
-            1 => // large
-                1.2f,
-            _ => 1.0f, // standard
-        };
+            popUpTextScale = popUpTextDispSize switch
+            {
+                2 => // maximum
+                    1.4f,
+                1 => // large
+                    1.2f,
+                _ => 1.0f, // standard
+            };
+        }
 
         return (flyTextScale, popUpTextScale);
     }

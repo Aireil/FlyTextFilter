@@ -145,12 +145,12 @@ public class AdjustmentsTab
 
         ImGui.Separator();
 
-        if (ConfigModule.Instance()->GetIntValue(ConfigOption.FlyTextDisp) == 0)
+        if (GameConfig.UiControl.TryGetBool(ConfigOption.FlyTextDisp, out var flyTextEnabled) && !flyTextEnabled)
         {
             ImGui.TextColored(ImGuiColors.DalamudRed, "Fly texts are disabled in the game settings.");
         }
 
-        if (ConfigModule.Instance()->GetIntValue(ConfigOption.PopUpTextDisp) == 0)
+        if (GameConfig.UiControl.TryGetBool(ConfigOption.PopUpTextDisp, out var popUpTextEnabled) && !popUpTextEnabled)
         {
             ImGui.TextColored(ImGuiColors.DalamudRed, "Pop-up texts are disabled in the game settings.");
         }
