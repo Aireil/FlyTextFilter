@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Authors>Aireil</Authors>
-    <Version>4.1.3.3</Version>
+    <Version>4.1.3.4</Version>
     <RootNamespace>FlyTextFilter</RootNamespace>
   </PropertyGroup>
 
