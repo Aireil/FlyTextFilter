@@ -508,14 +508,9 @@ public unsafe class FlyTextHandler
                 };
 
                 this.AddLog(flyTextLog);
-                this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, (byte)(option + (shouldFilter ? 150 : 100)), actionKind, actionId, val1, val2, damageType);
-                return;
             }
 
-            if (shouldFilter)
-            {
-                return;
-            }
+            option += (byte)(shouldFilter ? 150 : 100); // still go in AddToScreenLogDetour, but keep the filtering
         }
         catch (Exception ex)
         {
