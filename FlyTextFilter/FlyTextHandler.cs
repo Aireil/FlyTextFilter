@@ -11,7 +11,6 @@ using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FlyTextFilter.Model;
 using FlyTextFilter.Model.FlyTextAdjustments;
 
@@ -102,7 +101,7 @@ public unsafe class FlyTextHandler
     public static (float flyTextScale, float popUpTextScale) GetDefaultScaling()
     {
         var flyTextScale = 1.0f;
-        if (GameConfig.UiConfig.TryGetUInt(ConfigOption.FlyTextDispSize, out var flyTextDispSize))
+        if (Service.GameConfig.UiConfig.TryGetUInt("FlyTextDispSize", out var flyTextDispSize))
         {
             flyTextScale = flyTextDispSize switch
             {
@@ -115,7 +114,7 @@ public unsafe class FlyTextHandler
         }
 
         var popUpTextScale = 1.0f;
-        if (GameConfig.UiConfig.TryGetUInt(ConfigOption.PopUpTextDispSize, out var popUpTextDispSize))
+        if (Service.GameConfig.UiConfig.TryGetUInt("PopUpTextDispSize", out var popUpTextDispSize))
         {
             popUpTextScale = popUpTextDispSize switch
             {

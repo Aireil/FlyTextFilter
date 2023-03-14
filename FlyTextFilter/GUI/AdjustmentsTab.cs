@@ -1,6 +1,5 @@
 ﻿using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface.Colors;
-using FFXIVClientStructs.FFXIV.Client.UI.Misc;
 using FlyTextFilter.Model.FlyTextAdjustments;
 using ImGuiNET;
 
@@ -8,7 +7,7 @@ namespace FlyTextFilter.GUI;
 
 public class AdjustmentsTab
 {
-    public static unsafe void Draw()
+    public static void Draw()
     {
         var hasDamageTypeChanged = false;
 
@@ -145,12 +144,12 @@ public class AdjustmentsTab
 
         ImGui.Separator();
 
-        if (GameConfig.UiControl.TryGetBool(ConfigOption.FlyTextDisp, out var flyTextEnabled) && !flyTextEnabled)
+        if (Service.GameConfig.UiControl.TryGetBool("FlyTextDisp", out var flyTextEnabled) && !flyTextEnabled)
         {
             ImGui.TextColored(ImGuiColors.DalamudRed, "Fly texts are disabled in the game settings.");
         }
 
-        if (GameConfig.UiControl.TryGetBool(ConfigOption.PopUpTextDisp, out var popUpTextEnabled) && !popUpTextEnabled)
+        if (Service.GameConfig.UiControl.TryGetBool("PopUpTextDisp", out var popUpTextEnabled) && !popUpTextEnabled)
         {
             ImGui.TextColored(ImGuiColors.DalamudRed, "Pop-up texts are disabled in the game settings.");
         }

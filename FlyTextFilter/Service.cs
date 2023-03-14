@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Command;
+using Dalamud.Game.Config;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.IoC;
@@ -41,4 +42,6 @@ internal class Service
     internal static ObjectTable ObjectTable { get; private set; } = null!;
     [PluginService]
     internal static Framework Framework { get; private set; } = null!;
+    [PluginService]
+    internal static GameConfig GameConfig { get; private set; } = null!;
 }
