@@ -22,6 +22,7 @@ public unsafe class FlyTextHandler
     public bool HasLoadingFailed;
     public ConcurrentQueue<FlyTextLog> Logs = new();
 
+    private readonly short flyTextArrayOffset;
     private readonly delegate* unmanaged<long, long> getTargetIdDelegate; // BattleChara_vf84 in 6.2
     private int? val1Preview;
 
@@ -61,6 +62,7 @@ public unsafe class FlyTextHandler
             getTargetIdAddress = Service.SigScanner.ScanText("48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 74 24");
             addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 39");
             addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 83 7D 7F 00 0F 86");
+            this.flyTextArrayOffset = *(short*)Service.SigScanner.ScanModule("?? ?? ?? ?? C7 83 ?? ?? ?? ?? ?? ?? ?? ?? 33 ED C7");
         }
         catch (Exception ex)
         {
@@ -149,7 +151,7 @@ public unsafe class FlyTextHandler
             return;
         }
 
-        var flyTextArray = (FlyTextArray*)(addon + 11048); // AddonFlyText_Initialize
+        var flyTextArray = (FlyTextArray*)(addon + this.flyTextArrayOffset); // AddonFlyText_Initialize
 
         if (flyTextPositions.HealingGroupX != null)
         {
@@ -192,17 +194,17 @@ public unsafe class FlyTextHandler
             return;
         }
 
-        var currFlyTextScale = (float*)(agent + 0x4C);
-        var currPopUpTextScale = (float*)(agent + 0x344);
+        var currFlyTextScalePtr = (float*)(agent + 0x4C);
+        var currPopUpTextScalePtr = (float*)(agent + 0x344);
 
         if (flyTextScale != null)
         {
-            *currFlyTextScale = flyTextScale.Value;
+            *currFlyTextScalePtr = flyTextScale.Value;
         }
 
         if (popUpTextScale != null)
         {
-            *currPopUpTextScale = popUpTextScale.Value;
+            *currPopUpTextScalePtr = popUpTextScale.Value;
         }
     }
 
