@@ -23,6 +23,8 @@ public unsafe class FlyTextHandler
     public ConcurrentQueue<FlyTextLog> Logs = new();
 
     private readonly short flyTextArrayOffset;
+    private readonly short popupTextScaleOffset;
+    private readonly byte flyTextScaleOffset;
     private readonly delegate* unmanaged<long, long> getTargetIdDelegate; // BattleChara_vf84 in 6.2
     private int? val1Preview;
 
@@ -62,7 +64,10 @@ public unsafe class FlyTextHandler
             getTargetIdAddress = Service.SigScanner.ScanText("48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 74 24");
             addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 39");
             addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 83 7D 7F 00 0F 86");
+
             this.flyTextArrayOffset = *(short*)Service.SigScanner.ScanModule("?? ?? ?? ?? C7 83 ?? ?? ?? ?? ?? ?? ?? ?? 33 ED C7");
+            this.flyTextScaleOffset = *(byte*)Service.SigScanner.ScanModule("?? BA ?? ?? ?? ?? F3 0F 59 05 ?? ?? ?? ?? 48 8B CF F3 4C 0F 2C C0");
+            this.popupTextScaleOffset = *(short*)Service.SigScanner.ScanModule("?? ?? ?? ?? BA ?? ?? ?? ?? F3 0F 59 05 ?? ?? ?? ?? 49 8B CD 48 8B 84 24 ?? ?? ?? ?? 48 89 87");
         }
         catch (Exception ex)
         {
@@ -151,7 +156,7 @@ public unsafe class FlyTextHandler
             return;
         }
 
-        var flyTextArray = (FlyTextArray*)(addon + this.flyTextArrayOffset); // AddonFlyText_Initialize
+        var flyTextArray = (FlyTextArray*)(addon + this.flyTextArrayOffset);
 
         if (flyTextPositions.HealingGroupX != null)
         {
@@ -194,8 +199,8 @@ public unsafe class FlyTextHandler
             return;
         }
 
-        var currFlyTextScalePtr = (float*)(agent + 0x4C);
-        var currPopUpTextScalePtr = (float*)(agent + 0x344);
+        var currFlyTextScalePtr = (float*)(agent + this.flyTextScaleOffset);
+        var currPopUpTextScalePtr = (float*)(agent + this.popupTextScaleOffset);
 
         if (flyTextScale != null)
         {
