@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
-using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FlyTextFilter.Model;
 using ImGuiNET;
 
@@ -173,10 +172,5 @@ public class Util
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudGrey, "(?)");
         SetHoverTooltip(helpMessage);
-    }
-
-    public static unsafe bool IsPartyMember(Character* character)
-    {
-        return (character->StatusFlags & (1 << 5)) != 0;
     }
 }

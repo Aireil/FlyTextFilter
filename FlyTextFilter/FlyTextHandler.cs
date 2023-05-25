@@ -372,7 +372,7 @@ public unsafe class FlyTextHandler
             return FlyTextCharCategory.You;
         }
 
-        if (Util.IsPartyMember(character))
+        if (character->IsPartyMember)
         {
             return FlyTextCharCategory.Party;
         }
