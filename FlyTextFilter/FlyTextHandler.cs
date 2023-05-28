@@ -483,11 +483,6 @@ public unsafe class FlyTextHandler
                 }
             }
 
-            if (damageType is 1 or 2 or 3 && ShouldHideDamageTypeIcon(flyTextKind))
-            {
-                damageType = 0;
-            }
-
             var adjustedSource = source;
             if ((Service.Configuration.ShouldAdjustDotSource && flyTextKind == FlyTextKind.AutoAttack && option == 0 && actionKind == 0 && target == source)
                 || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId)
@@ -563,6 +558,11 @@ public unsafe class FlyTextHandler
             }
 
             bool shouldFilter;
+
+            if (flyTextCreation->DamageType is 1 or 2 or 3 && ShouldHideDamageTypeIcon(flyTextCreation->FlyTextKind))
+            {
+                flyTextCreation->DamageType = 0;
+            }
 
             // classic function
             if (flyTextCreation->Option >= 100)
