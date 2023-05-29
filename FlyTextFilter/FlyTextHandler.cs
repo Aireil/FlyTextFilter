@@ -25,7 +25,7 @@ public unsafe class FlyTextHandler
     private readonly short flyTextArrayOffset;
     private readonly short popupTextScaleOffset;
     private readonly byte flyTextScaleOffset;
-    private readonly delegate* unmanaged<long, long> getTargetIdDelegate; // BattleChara_vf84 in 6.2
+    private readonly delegate* unmanaged<long, long> getScreenLogManagerDelegate; // Client::Game::Character::BattleChara_GetScreenLogManager in 6.4
     private int? val1Preview;
 
     private delegate void* AddonFlyTextOnSetupDelegate(
@@ -47,21 +47,21 @@ public unsafe class FlyTextHandler
     private readonly Hook<AddToScreenLogWithScreenLogKindDelegate>? addToScreenLogWithScreenLogKindHook;
 
     private delegate void* AddToScreenLogDelegate(
-        long targetId,
+        long screenLogManager,
         FlyTextCreation* flyTextCreation);
     private readonly Hook<AddToScreenLogDelegate>? addToScreenLogHook;
 
     public FlyTextHandler()
     {
         nint addonFlyTextOnSetupAddress;
-        nint getTargetIdAddress;
+        nint getScreenLogManagerAddress;
         nint addToScreenLogWithScreenLogKindAddress;
         nint addToScreenLogAddress;
 
         try
         {
             addonFlyTextOnSetupAddress = Service.SigScanner.ScanText("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC 20 80 89");
-            getTargetIdAddress = Service.SigScanner.ScanText("48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 74 24");
+            getScreenLogManagerAddress = Service.SigScanner.ScanText("48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 74 24");
             addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 39");
             addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 83 7D 7F 00 0F 86");
 
@@ -78,7 +78,7 @@ public unsafe class FlyTextHandler
 
         Service.FlyTextGui.FlyTextCreated += this.FlyTextCreate;
 
-        this.getTargetIdDelegate = (delegate* unmanaged<long, long>)getTargetIdAddress;
+        this.getScreenLogManagerDelegate = (delegate* unmanaged<long, long>)getScreenLogManagerAddress;
 
         this.addonFlyTextOnSetupHook = Hook<AddonFlyTextOnSetupDelegate>.FromAddress(addonFlyTextOnSetupAddress, this.AddonFlyTextOnSetupDetour);
         this.addonFlyTextOnSetupHook.Enable();
@@ -218,7 +218,7 @@ public unsafe class FlyTextHandler
         var localPlayer = Service.ClientState.LocalPlayer?.Address;
         if (localPlayer != null)
         {
-            var targetId = this.getTargetIdDelegate(localPlayer.Value);
+            var screenLogManager = this.getScreenLogManagerDelegate(localPlayer.Value);
             int val1;
             if (flyTextKind is FlyTextKind.NamedIcon2 or FlyTextKind.NamedIconFaded2)
                 val1 = 3166;
@@ -250,7 +250,7 @@ public unsafe class FlyTextHandler
 
             this.val1Preview = flyTextCreation.Val1;
 
-            this.addToScreenLogHook?.Original(targetId, &flyTextCreation);
+            this.addToScreenLogHook?.Original(screenLogManager, &flyTextCreation);
         }
     }
 
@@ -259,10 +259,10 @@ public unsafe class FlyTextHandler
         var localPlayer = Service.ClientState.LocalPlayer?.Address;
         if (localPlayer != null)
         {
-            var targetId = this.getTargetIdDelegate(localPlayer.Value);
+            var screenLogManager = this.getScreenLogManagerDelegate(localPlayer.Value);
             var flyTextCreation = flyTextLog.FlyTextCreation;
             this.val1Preview = flyTextCreation.Val1;
-            this.addToScreenLogHook?.Original(targetId, &flyTextCreation);
+            this.addToScreenLogHook?.Original(screenLogManager, &flyTextCreation);
         }
     }
 
@@ -544,7 +544,7 @@ public unsafe class FlyTextHandler
         return false;
     }
 
-    private void* AddToScreenLogDetour(long targetId, FlyTextCreation* flyTextCreation)
+    private void* AddToScreenLogDetour(long screenLogManager, FlyTextCreation* flyTextCreation)
     {
         try
         {
@@ -622,6 +622,6 @@ public unsafe class FlyTextHandler
             PluginLog.Error(ex, "Exception in AddToScreenLogDetour");
         }
 
-        return this.addToScreenLogHook!.Original(targetId, flyTextCreation);
+        return this.addToScreenLogHook!.Original(screenLogManager, flyTextCreation);
     }
 }
