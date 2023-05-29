@@ -30,8 +30,10 @@ public struct FlyTextArray
     {
         get
         {
-            if (i is < 0 or > 10)
+            if (i is < 0 or > 9)
+            {
                 return null;
+            }
 
             fixed (void* ptr = &this)
             {
