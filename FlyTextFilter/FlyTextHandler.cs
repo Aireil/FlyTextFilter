@@ -220,9 +220,9 @@ public unsafe class FlyTextHandler
         {
             var screenLogManager = this.getScreenLogManagerDelegate(localPlayer.Value);
             int val1;
-            if (flyTextKind is FlyTextKind.NamedIcon2 or FlyTextKind.NamedIconFaded2)
+            if (flyTextKind is FlyTextKind.Debuff or FlyTextKind.DebuffFading)
                 val1 = 3166;
-            else if (flyTextKind is FlyTextKind.NamedIcon or FlyTextKind.NamedIconFaded)
+            else if (flyTextKind is FlyTextKind.Buff or FlyTextKind.BuffFading)
                 val1 = 3260;
             else
                 val1 = 1111;
@@ -233,7 +233,7 @@ public unsafe class FlyTextHandler
                 val2 = 10;
             }
 
-            var actionId = flyTextKind is FlyTextKind.NamedAttack2 or FlyTextKind.NamedCriticalHit2 ? 16230 : 2555;
+            var actionId = flyTextKind is FlyTextKind.Healing or FlyTextKind.HealingCrit ? 16230 : 2555;
 
             var flyTextCreation = new FlyTextCreation
             {
@@ -241,7 +241,7 @@ public unsafe class FlyTextHandler
                 SourceStyle = sourceStyle,
                 TargetStyle = targetStyle,
                 Option = 5,
-                ActionKind = (byte)(flyTextKind == FlyTextKind.NamedIconWithItemOutline ? 2 : 1),
+                ActionKind = (byte)(flyTextKind == FlyTextKind.LootedItem ? 2 : 1),
                 ActionId = actionId,
                 Val1 = val1,
                 Val2 = val2,
@@ -288,10 +288,10 @@ public unsafe class FlyTextHandler
         // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         switch (flyTextKind)
         {
-            case FlyTextKind.AutoAttack:
-            case FlyTextKind.CriticalHit:
-            case FlyTextKind.DirectHit:
-            case FlyTextKind.CriticalDirectHit:
+            case FlyTextKind.AutoAttackOrDot:
+            case FlyTextKind.AutoAttackOrDotDh:
+            case FlyTextKind.AutoAttackOrDotCrit:
+            case FlyTextKind.AutoAttackOrDotCritDh:
                 if (Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIconAutoAttacks)
                 {
                     return true;
@@ -299,8 +299,8 @@ public unsafe class FlyTextHandler
 
                 break;
 
-            case FlyTextKind.NamedIcon:
-            case FlyTextKind.NamedIcon2:
+            case FlyTextKind.Buff:
+            case FlyTextKind.Debuff:
                 if (Service.Configuration.FlyTextAdjustments.ShouldHideDamageTypeIconStatusEffects)
                 {
                     return true;
@@ -484,7 +484,7 @@ public unsafe class FlyTextHandler
             }
 
             var adjustedSource = source;
-            if ((Service.Configuration.ShouldAdjustDotSource && flyTextKind == FlyTextKind.AutoAttack && option == 0 && actionKind == 0 && target == source)
+            if ((Service.Configuration.ShouldAdjustDotSource && flyTextKind == FlyTextKind.AutoAttackOrDot && option == 0 && actionKind == 0 && target == source)
                 || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId)
                 || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Chocobo && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId))
             {

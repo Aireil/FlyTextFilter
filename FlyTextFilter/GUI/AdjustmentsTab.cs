@@ -161,15 +161,15 @@ public class AdjustmentsTab
     {
         if (createFlyText)
         {
-            Service.FlyTextHandler.CreateFlyText(FlyTextKind.NamedAttack2, 0, 0);
-            Service.FlyTextHandler.CreateFlyText(FlyTextKind.NamedIcon, 0, 0);
-            Service.FlyTextHandler.CreateFlyText(FlyTextKind.NamedAttack, 0, 0);
+            Service.FlyTextHandler.CreateFlyText(FlyTextKind.Healing, 0, 0);
+            Service.FlyTextHandler.CreateFlyText(FlyTextKind.Buff, 0, 0);
+            Service.FlyTextHandler.CreateFlyText(FlyTextKind.Damage, 0, 0);
         }
 
         if (createPopUpText)
         {
-            Service.FlyTextHandler.CreateFlyText(FlyTextKind.NamedAttack, 3, 2);
-            Service.FlyTextHandler.CreateFlyText(FlyTextKind.NamedAttack, 2, 2);
+            Service.FlyTextHandler.CreateFlyText(FlyTextKind.Damage, 3, 2);
+            Service.FlyTextHandler.CreateFlyText(FlyTextKind.Damage, 2, 2);
         }
     }
 }
