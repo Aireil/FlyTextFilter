@@ -4,6 +4,8 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using FlyTextFilter.GUI;
 
+#pragma warning disable SA1134 // AttributesMustNotShareLine
+
 namespace FlyTextFilter;
 
 internal class Service
