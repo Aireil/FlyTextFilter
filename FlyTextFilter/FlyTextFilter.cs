@@ -8,8 +8,6 @@ namespace FlyTextFilter;
 
 public sealed class FlyTextFilter : IDalamudPlugin
 {
-    public string Name => "FlyTextFilter";
-
     private readonly WindowSystem windowSystem;
 
     public FlyTextFilter(

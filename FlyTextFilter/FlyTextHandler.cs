@@ -6,7 +6,6 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
-using Dalamud.Logging;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -72,7 +71,7 @@ public unsafe class FlyTextHandler
         catch (Exception ex)
         {
             this.HasLoadingFailed = true;
-            PluginLog.Error(ex, "Sig scan failed.");
+            Service.PluginLog.Error(ex, "Sig scan failed.");
             return;
         }
 
@@ -447,7 +446,7 @@ public unsafe class FlyTextHandler
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, "Exception in AddonFlyTextOnSetupDetour");
+            Service.PluginLog.Error(ex, "Exception in AddonFlyTextOnSetupDetour");
         }
 
         return result;
@@ -475,11 +474,11 @@ public unsafe class FlyTextHandler
                                          + $"A{actionId}"
                                          + $"S{(source->GameObject.ObjectKind == 1 ? "-" : $"\"{MemoryHelper.ReadSeStringNullTerminated((nint)source->GameObject.Name)}\"")}"
                                          + $"T{(target->GameObject.ObjectKind == 1 ? "-" : $"\"{MemoryHelper.ReadSeStringNullTerminated((nint)target->GameObject.Name)}\"")}";
-                    PluginLog.Information(this.explorerString);
+                    Service.PluginLog.Information(this.explorerString);
                 }
                 catch
                 {
-                    PluginLog.Information("Unknown type found part I: failed to get info");
+                    Service.PluginLog.Information("Unknown type found part I: failed to get info");
                 }
             }
 
@@ -515,7 +514,7 @@ public unsafe class FlyTextHandler
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, "Exception in AddScreenLogDetour");
+            Service.PluginLog.Error(ex, "Exception in AddScreenLogDetour");
         }
 
         this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, damageType);
@@ -550,7 +549,7 @@ public unsafe class FlyTextHandler
         {
             if (this.IsExplorerAndUnknownType(flyTextCreation->FlyTextKind))
             {
-                PluginLog.Information($"Unknown type found part II: {flyTextCreation->FlyTextKind}");
+                Service.PluginLog.Information($"Unknown type found part II: {flyTextCreation->FlyTextKind}");
                 Service.ChatGui.PrintError($"[FlyTextFilter] You found the unknown type: {flyTextCreation->FlyTextKind}! Please copy the text in the next message and ping Aireil#8310 on Discord with it or send it as a feedback in the installer. Thank you!");
                 Service.ChatGui.PrintError($"\"K{(uint)flyTextCreation->FlyTextKind}{this.explorerString}\"");
                 this.explorerString = null;
@@ -619,7 +618,7 @@ public unsafe class FlyTextHandler
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, "Exception in AddToScreenLogDetour");
+            Service.PluginLog.Error(ex, "Exception in AddToScreenLogDetour");
         }
 
         return this.addToScreenLogHook!.Original(screenLogManager, flyTextCreation);

@@ -7,7 +7,6 @@ using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
-using Dalamud.Logging;
 using FlyTextFilter.Model;
 using ImGuiNET;
 
@@ -116,7 +115,7 @@ public class TypesTable
                     }
                     catch (Exception ex)
                     {
-                        PluginLog.Error(ex, "Failed to import setting from clipboard.");
+                        Service.PluginLog.Error(ex, "Failed to import setting from clipboard.");
                         Service.ConfigWindow.UpdateMessage("Failed to import setting from clipboard.", ImGuiColors.DalamudRed);
                     }
                 }

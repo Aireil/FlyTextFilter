@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
-using Dalamud.Logging;
 using FlyTextFilter.Model;
 using ImGuiNET;
 
@@ -50,7 +49,7 @@ public class TypesTab
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, "Failed to import settings from clipboard.");
+                Service.PluginLog.Error(ex, "Failed to import settings from clipboard.");
                 Service.ConfigWindow.UpdateMessage("Failed to import settings from clipboard.", ImGuiColors.DalamudRed);
             }
         }

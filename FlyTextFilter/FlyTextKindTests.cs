@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Dalamud.Logging;
 
 namespace FlyTextFilter;
 
@@ -81,7 +80,7 @@ public unsafe class FlyTextKindTests
             return;
         }
 
-        PluginLog.Debug("FlyTextKind test start.");
+        Service.PluginLog.Debug("FlyTextKind test start.");
 
         var hasChanged = false;
         foreach (var (logId, expectedFlyTextKind, expectedOption) in TestData)
@@ -92,18 +91,18 @@ public unsafe class FlyTextKindTests
             if (flyTextKind != expectedFlyTextKind || option != expectedOption)
             {
                 hasChanged = true;
-                PluginLog.Error($"/!\\ logId: {logId}, expected ({expectedFlyTextKind}, {expectedOption}), got ({flyTextKind}, {option}) (FlyTextKind, option).");
+                Service.PluginLog.Error($"/!\\ logId: {logId}, expected ({expectedFlyTextKind}, {expectedOption}), got ({flyTextKind}, {option}) (FlyTextKind, option).");
             }
         }
 
         if (hasChanged)
         {
-            PluginLog.Error("FlyTextKind enum has changed, please report the issue.");
+            Service.PluginLog.Error("FlyTextKind enum has changed, please report the issue.");
         }
 
         hasPassed = !hasChanged;
 
-        PluginLog.Debug("FlyTextKind test end.");
+        Service.PluginLog.Debug("FlyTextKind test end.");
     }
 
     public static void PrintData()
@@ -125,7 +124,7 @@ public unsafe class FlyTextKindTests
             }
         }
 
-        PluginLog.Information(data.ToString());
+        Service.PluginLog.Information(data.ToString());
     }
 
     private static delegate* unmanaged<int, int*, int> GetConvertFunction()
@@ -137,7 +136,7 @@ public unsafe class FlyTextKindTests
         }
         catch (Exception ex)
         {
-            PluginLog.Error(ex, "FlyTextKind convert function sig scan failed.");
+            Service.PluginLog.Error(ex, "FlyTextKind convert function sig scan failed.");
         }
 
         return (delegate* unmanaged<int, int*, int>)address;
