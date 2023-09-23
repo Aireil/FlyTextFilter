@@ -80,13 +80,13 @@ public unsafe class FlyTextHandler
 
         this.getScreenLogManagerDelegate = (delegate* unmanaged<long, long>)getScreenLogManagerAddress;
 
-        this.addonFlyTextOnSetupHook = Hook<AddonFlyTextOnSetupDelegate>.FromAddress(addonFlyTextOnSetupAddress, this.AddonFlyTextOnSetupDetour);
+        this.addonFlyTextOnSetupHook = Service.GameInteropProvider.HookFromAddress<AddonFlyTextOnSetupDelegate>(addonFlyTextOnSetupAddress, this.AddonFlyTextOnSetupDetour);
         this.addonFlyTextOnSetupHook.Enable();
 
-        this.addToScreenLogWithScreenLogKindHook = Hook<AddToScreenLogWithScreenLogKindDelegate>.FromAddress(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
+        this.addToScreenLogWithScreenLogKindHook = Service.GameInteropProvider.HookFromAddress<AddToScreenLogWithScreenLogKindDelegate>(addToScreenLogWithScreenLogKindAddress, this.AddToScreenLogWithScreenLogKindDetour);
         this.addToScreenLogWithScreenLogKindHook.Enable();
 
-        this.addToScreenLogHook = Hook<AddToScreenLogDelegate>.FromAddress(addToScreenLogAddress, this.AddToScreenLogDetour);
+        this.addToScreenLogHook = Service.GameInteropProvider.HookFromAddress<AddToScreenLogDelegate>(addToScreenLogAddress, this.AddToScreenLogDetour);
         this.addToScreenLogHook.Enable();
 
         this.ApplyPositions();
