@@ -6,6 +6,7 @@ using System.Numerics;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
 using Dalamud.Logging;
 using FlyTextFilter.Model;
 using ImGuiNET;
