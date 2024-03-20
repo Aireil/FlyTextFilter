@@ -7,8 +7,8 @@ namespace FlyTextFilter;
 public unsafe class FlyTextKindTests
 {
     private const int SwitchDefaultValue = 55;
-    private static readonly List<(int logId, int flyTextKind, int option)> TestData = new()
-    {
+    private static readonly List<(int logId, int flyTextKind, int option)> TestData =
+    [
         (-1, 55, 5),
         (447, 1, 5),
         (448, 5, 5),
@@ -69,7 +69,7 @@ public unsafe class FlyTextKindTests
         (7300, 14, 1),
         (9051, 14, 1),
         (9919, 15, 5),
-    };
+    ];
 
     public static void RunTests(out bool hasPassed)
     {

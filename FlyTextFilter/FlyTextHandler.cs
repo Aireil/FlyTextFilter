@@ -391,7 +391,7 @@ public unsafe class FlyTextHandler
         ref float yOffset,
         ref bool handled)
     {
-        if (!Service.Configuration.Blacklist.Any())
+        if (Service.Configuration.Blacklist.Count == 0)
         {
             return;
         }
@@ -520,7 +520,7 @@ public unsafe class FlyTextHandler
         this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, damageType);
     }
 
-    private readonly List<FlyTextKind> seenExplorer = new();
+    private readonly List<FlyTextKind> seenExplorer = [];
     private string? explorerString;
 
     private bool IsExplorerAndUnknownType(FlyTextKind flyTextKind)

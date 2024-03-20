@@ -213,22 +213,22 @@ public class PluginConfiguration : IPluginConfiguration
     }
 
     [Obsolete("Removed in v2")]
-    public List<bool> KindToggleListPlayer { private get; set; } = new();
+    public List<bool> KindToggleListPlayer { private get; set; } = [];
 
     [Obsolete("Removed in v2")]
-    public List<bool> KindToggleListOther { private get; set; } = new();
+    public List<bool> KindToggleListOther { private get; set; } = [];
 
     [Obsolete("Removed in v4")]
-    public HashSet<FlyTextKind> HideFlyTextKindPlayer { private get; set; } = new();
+    public HashSet<FlyTextKind> HideFlyTextKindPlayer { private get; set; } = [];
 
     [Obsolete("Removed in v4")]
-    public HashSet<FlyTextKind> HideFlyTextKindOthers { private get; set; } = new();
+    public HashSet<FlyTextKind> HideFlyTextKindOthers { private get; set; } = [];
 
     [Obsolete("Removed in v4")]
-    public HashSet<FlyTextKind> HideFlyTextKindOnPlayer { private get; set; } = new();
+    public HashSet<FlyTextKind> HideFlyTextKindOnPlayer { private get; set; } = [];
 
     [Obsolete("Removed in v4")]
-    public HashSet<FlyTextKind> HideFlyTextKindOnOthers { private get; set; } = new();
+    public HashSet<FlyTextKind> HideFlyTextKindOnOthers { private get; set; } = [];
 
     [Obsolete("Removed in v4")]
     private static void ShiftOldEnum(ref HashSet<FlyTextKind> hashSet, int start, int shift)

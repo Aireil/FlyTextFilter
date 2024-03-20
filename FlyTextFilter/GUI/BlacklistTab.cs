@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ImGuiNET;
+﻿using ImGuiNET;
 
 namespace FlyTextFilter.GUI;
 
@@ -18,7 +17,7 @@ public class BlacklistTab
             Service.Configuration.Save();
         }
 
-        if (Service.Configuration.Blacklist.Any())
+        if (Service.Configuration.Blacklist.Count != 0)
         {
             ImGui.Separator();
         }
