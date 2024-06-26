@@ -60,9 +60,9 @@ public unsafe class FlyTextHandler
         try
         {
             addonFlyTextOnSetupAddress = Service.SigScanner.ScanText("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC 20 80 89");
-            getScreenLogManagerAddress = Service.SigScanner.ScanText("48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 8D 81 ?? ?? ?? ?? C3 CC CC CC CC CC CC CC CC 48 89 5C 24 ?? 48 89 74 24");
+            getScreenLogManagerAddress = Service.SigScanner.ScanText("48 8D 81 80 22 00 00");
             addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 39");
-            addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? EB 06 8B 9D 87 00 00 00");
+            addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 45 85 E4 0F 84 ?? ?? ?? ?? 48 8B 0D");
 
             this.flyTextArrayOffset = *(short*)Service.SigScanner.ScanModule("?? ?? ?? ?? C7 83 ?? ?? ?? ?? ?? ?? ?? ?? 33 ED C7");
             this.flyTextScaleOffset = *(byte*)Service.SigScanner.ScanModule("?? BA ?? ?? ?? ?? F3 0F 59 05 ?? ?? ?? ?? 48 8B CF F3 4C 0F 2C C0");
