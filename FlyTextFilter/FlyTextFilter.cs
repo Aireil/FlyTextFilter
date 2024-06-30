@@ -1,5 +1,4 @@
 ﻿using Dalamud.Interface.Windowing;
-using Dalamud.IoC;
 using Dalamud.Plugin;
 using FlyTextFilter.GUI;
 
@@ -10,8 +9,7 @@ public sealed class FlyTextFilter : IDalamudPlugin
 {
     private readonly WindowSystem windowSystem;
 
-    public FlyTextFilter(
-        [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
+    public FlyTextFilter(IDalamudPluginInterface pluginInterface)
     {
         pluginInterface.Create<Service>();
 

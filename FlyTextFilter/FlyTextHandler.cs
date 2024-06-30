@@ -6,12 +6,12 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
-using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FlyTextFilter.Model;
 using FlyTextFilter.Model.FlyTextAdjustments;
+using ObjectKind = FFXIVClientStructs.FFXIV.Client.Game.Object.ObjectKind;
 
 namespace FlyTextFilter;
 
@@ -192,7 +192,7 @@ public unsafe class FlyTextHandler
 
     public void SetScaling(float? flyTextScale, float? popUpTextScale)
     {
-        var agent = (nint)Framework.Instance()->GetUiModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
+        var agent = (nint)Framework.Instance()->GetUIModule()->GetAgentModule()->GetAgentByInternalId(AgentId.ScreenLog);
         if (agent == nint.Zero || this.HasLoadingFailed)
         {
             return;
@@ -472,8 +472,8 @@ public unsafe class FlyTextHandler
                     this.explorerString = $"K{(uint)flyTextKind}"
                                          + $"T{Service.ClientState.TerritoryType}"
                                          + $"A{actionId}"
-                                         + $"S{(source->GameObject.ObjectKind == 1 ? "-" : $"\"{MemoryHelper.ReadSeStringNullTerminated((nint)source->GameObject.Name)}\"")}"
-                                         + $"T{(target->GameObject.ObjectKind == 1 ? "-" : $"\"{MemoryHelper.ReadSeStringNullTerminated((nint)target->GameObject.Name)}\"")}";
+                                         + $"S{(source->GameObject.ObjectKind == ObjectKind.Pc ? "-" : $"\"{source->GameObject.NameString}\"")}"
+                                         + $"T{(target->GameObject.ObjectKind == ObjectKind.Pc ? "-" : $"\"{target->GameObject.NameString}\"")}";
                     Service.PluginLog.Information(this.explorerString);
                 }
                 catch
@@ -484,8 +484,8 @@ public unsafe class FlyTextHandler
 
             var adjustedSource = source;
             if ((Service.Configuration.ShouldAdjustDotSource && flyTextKind == FlyTextKind.AutoAttackOrDot && option == 0 && actionKind == 0 && target == source)
-                || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId)
-                || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Chocobo && source->CompanionOwnerID == Service.ClientState.LocalPlayer?.ObjectId))
+                || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerId == Service.ClientState.LocalPlayer?.GameObjectId)
+                || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Chocobo && source->CompanionOwnerId == Service.ClientState.LocalPlayer?.GameObjectId))
             {
                 adjustedSource = (Character*)(Service.ClientState.LocalPlayer?.Address ?? nint.Zero);
                 if (adjustedSource == null)

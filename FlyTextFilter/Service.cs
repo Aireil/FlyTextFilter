@@ -13,7 +13,7 @@ internal class Service
     internal static Commands Commands { get; set; } = null!;
     internal static ConfigWindow ConfigWindow { get; set; } = null!;
 
-    [PluginService] internal static DalamudPluginInterface Interface { get; private set; } = null!;
+    [PluginService] internal static IDalamudPluginInterface Interface { get; private set; } = null!;
     [PluginService] internal static IChatGui ChatGui { get; private set; } = null!;
     [PluginService] internal static IClientState ClientState { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
