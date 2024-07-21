@@ -64,7 +64,7 @@ public class Util
 
     public static void CenterCursor(float size)
     {
-        var offsetX = (ImGui.GetContentRegionAvail().X - size) / 2;
+        var offsetX = Round((ImGui.GetContentRegionAvail().X - size) / 2);
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + offsetX);
     }
 
@@ -82,7 +82,7 @@ public class Util
 
     public static void CenterText(string text, uint nbOfLines)
     {
-        var offsetY = nbOfLines * ImGui.GetFontSize() / 3.0f;
+        var offsetY = Round(nbOfLines * ImGui.GetFontSize() / 3.0f);
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + offsetY);
         CenterText(text);
     }
@@ -99,7 +99,7 @@ public class Util
         ImGui.PushFont(UiBuilder.IconFont);
         CenterCursor(icon.ToIconString());
         ImGui.PopFont();
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() - (ImGui.GetStyle().ItemSpacing.X / 2));
+        ImGui.SetCursorPosX(Round(ImGui.GetCursorPosX() - (ImGui.GetStyle().ItemSpacing.X / 2)));
 
         return DrawButtonIcon(icon, size);
     }
@@ -172,5 +172,10 @@ public class Util
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudGrey, "(?)");
         SetHoverTooltip(helpMessage);
+    }
+
+    public static float Round(float value)
+    {
+        return (float)Math.Round(value);
     }
 }
