@@ -14,7 +14,7 @@ namespace FlyTextFilter.GUI.TypesTab;
 
 public class TypesTable
 {
-    private readonly IOrderedEnumerable<KeyValuePair<FlyTextKind, string>> flyTextKindOrder = ((FlyTextKind[])Enum.GetValues(typeof(FlyTextKind))).ToDictionary(x => x, FlyTextKindData.GetAlias).ToList().OrderBy(x => x.Value);
+    private readonly IOrderedEnumerable<KeyValuePair<FlyTextKind, string>> flyTextKindOrder = ((FlyTextKind[])Enum.GetValues(typeof(FlyTextKind))).ToDictionary(kind => kind, FlyTextKindData.GetAlias).OrderBy(pair => pair.Value);
 
     public void Draw()
     {

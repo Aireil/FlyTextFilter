@@ -531,16 +531,14 @@ public unsafe class FlyTextHandler
         }
 
         // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-        switch (flyTextKind)
+        return flyTextKind switch
         {
-            case FlyTextKind.AutoAttackNoText3:
-            case FlyTextKind.CriticalHit4:
-            case FlyTextKind.NamedCriticalHitWithMp:
-            case FlyTextKind.NamedMp3:
-                return !this.seenExplorer.Contains(flyTextKind);
-        }
-
-        return false;
+            FlyTextKind.AutoAttackNoText3
+                or FlyTextKind.CriticalHit4
+                or FlyTextKind.NamedCriticalHitWithMp
+                or FlyTextKind.NamedMp3 => !this.seenExplorer.Contains(flyTextKind),
+            _ => false,
+        };
     }
 
     private void* AddToScreenLogDetour(long screenLogManager, FlyTextCreation* flyTextCreation)
