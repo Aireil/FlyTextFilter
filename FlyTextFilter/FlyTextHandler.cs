@@ -538,7 +538,10 @@ public unsafe class FlyTextHandler
             FlyTextKind.AutoAttackNoText3
                 or FlyTextKind.CriticalHit4
                 or FlyTextKind.NamedCriticalHitWithMp
-                or FlyTextKind.NamedMp3 => !this.seenExplorer.Contains(flyTextKind),
+                or FlyTextKind.NamedMp3
+                or FlyTextKind.Unknown16
+                or FlyTextKind.Unknown17
+                or FlyTextKind.Unknown18 => !this.seenExplorer.Contains(flyTextKind),
             _ => false,
         };
     }
@@ -550,7 +553,7 @@ public unsafe class FlyTextHandler
             if (this.IsExplorerAndUnknownType(flyTextCreation->FlyTextKind))
             {
                 Service.PluginLog.Information($"Unknown type found part II: {flyTextCreation->FlyTextKind}");
-                Service.ChatGui.PrintError($"[FlyTextFilter] You found the unknown type: {flyTextCreation->FlyTextKind}! Please copy the text in the next message and ping Aireil#8310 on Discord with it or send it as a feedback in the installer. Thank you!");
+                Service.ChatGui.PrintError($"[FlyTextFilter] You found the unknown type: {flyTextCreation->FlyTextKind}! Please copy the text in the next message and ping Aireil on Discord with it or send it as a feedback in the installer. Thank you!");
                 Service.ChatGui.PrintError($"\"K{(uint)flyTextCreation->FlyTextKind}{this.explorerString}\"");
                 this.explorerString = null;
                 this.seenExplorer.Add(flyTextCreation->FlyTextKind);
