@@ -16,7 +16,7 @@ namespace FlyTextFilter;
 public class PluginConfiguration : IPluginConfiguration
 {
     [JsonIgnore]
-    public const int CurrentConfigVersion = 7;
+    public const int CurrentConfigVersion = 8;
 
     public int Version { get; set; } = CurrentConfigVersion;
 
@@ -176,6 +176,14 @@ public class PluginConfiguration : IPluginConfiguration
             if (this.Version == 6)
             {
                 this.ShiftEnums(15, 1);
+
+                this.Version++;
+            }
+
+            // 7.2 enum changes
+            if (this.Version == 7)
+            {
+                this.ShiftEnums(16, 3);
 
                 this.Version++;
             }
