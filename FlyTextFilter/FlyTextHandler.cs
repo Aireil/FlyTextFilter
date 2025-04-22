@@ -539,7 +539,6 @@ public unsafe class FlyTextHandler
                 or FlyTextKind.CriticalHit4
                 or FlyTextKind.NamedCriticalHitWithMp
                 or FlyTextKind.NamedMp3
-                or FlyTextKind.Unknown16
                 or FlyTextKind.Unknown17
                 or FlyTextKind.Unknown18 => !this.seenExplorer.Contains(flyTextKind),
             _ => false,
