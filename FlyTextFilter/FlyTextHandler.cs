@@ -220,21 +220,33 @@ public unsafe class FlyTextHandler
         if (localPlayer != null)
         {
             var screenLogManager = this.getScreenLogManagerDelegate(localPlayer.Value);
-            int val1;
-            if (flyTextKind is FlyTextKind.Debuff or FlyTextKind.DebuffFading)
-                val1 = 3166;
-            else if (flyTextKind is FlyTextKind.Buff or FlyTextKind.BuffFading)
-                val1 = 3260;
-            else
-                val1 = 1111;
-
+            var val1 = 1111;
             var val2 = 0;
-            if (flyTextKind is FlyTextKind.Exp or FlyTextKind.IslandExp)
+            var actionId = 2555;
+            uint damageType = 1;
+            byte actionKind = 1;
+            switch (flyTextKind)
             {
-                val2 = 10;
+                case FlyTextKind.Debuff or FlyTextKind.DebuffFading:
+                    val1 = 3166;
+                    break;
+                case FlyTextKind.Buff or FlyTextKind.BuffFading:
+                    val1 = 3260;
+                    break;
+                case FlyTextKind.Exp or FlyTextKind.IslandExp:
+                    val2 = 10;
+                    break;
+                case FlyTextKind.Healing or FlyTextKind.HealingCrit:
+                    actionId = 16230;
+                    break;
+                case FlyTextKind.LootedItem:
+                    actionKind = 2;
+                    break;
+                case FlyTextKind.Dataset:
+                    damageType = 4032;
+                    val2 = 35;
+                    break;
             }
-
-            var actionId = flyTextKind is FlyTextKind.Healing or FlyTextKind.HealingCrit ? 16230 : 2555;
 
             var flyTextCreation = new FlyTextCreation
             {
@@ -242,11 +254,11 @@ public unsafe class FlyTextHandler
                 SourceStyle = sourceStyle,
                 TargetStyle = targetStyle,
                 Option = 5,
-                ActionKind = (byte)(flyTextKind == FlyTextKind.LootedItem ? 2 : 1),
+                ActionKind = actionKind,
                 ActionId = actionId,
                 Val1 = val1,
                 Val2 = val2,
-                DamageType = 1,
+                DamageType = damageType,
             };
 
             this.val1Preview = flyTextCreation.Val1;

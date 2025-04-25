@@ -20,6 +20,7 @@ namespace FlyTextFilter.Model;
  *   1 - Physical
  *   2 - Magic
  *   3 - Unique
+ *   4001->4044 - For Dataset kind, gets the text value from WKSCosmoToolName sheet.
  * */
 [StructLayout(LayoutKind.Sequential)]
 public struct FlyTextCreation
@@ -32,5 +33,5 @@ public struct FlyTextCreation
     public int ActionId;
     public int Val1; // status id if icon
     public int Val2;
-    public byte DamageType;
+    public uint DamageType;
 }
