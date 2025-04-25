@@ -42,7 +42,7 @@ public unsafe class FlyTextHandler
         int actionId,
         int val1,
         int val2,
-        byte damageType);
+        int val3);
     private readonly Hook<AddToScreenLogWithScreenLogKindDelegate>? addToScreenLogWithScreenLogKindHook;
 
     private delegate void* AddToScreenLogDelegate(
@@ -220,11 +220,11 @@ public unsafe class FlyTextHandler
         if (localPlayer != null)
         {
             var screenLogManager = this.getScreenLogManagerDelegate(localPlayer.Value);
+            var actionId = 2555;
+            byte actionKind = 1;
             var val1 = 1111;
             var val2 = 0;
-            var actionId = 2555;
-            uint damageType = 1;
-            byte actionKind = 1;
+            var val3 = 1;
             switch (flyTextKind)
             {
                 case FlyTextKind.Debuff or FlyTextKind.DebuffFading:
@@ -243,7 +243,7 @@ public unsafe class FlyTextHandler
                     actionKind = 2;
                     break;
                 case FlyTextKind.Dataset:
-                    damageType = 4032;
+                    val3 = 4032;
                     val2 = 35;
                     break;
             }
@@ -258,7 +258,7 @@ public unsafe class FlyTextHandler
                 ActionId = actionId,
                 Val1 = val1,
                 Val2 = val2,
-                DamageType = damageType,
+                Val3 = val3,
             };
 
             this.val1Preview = flyTextCreation.Val1;
@@ -475,7 +475,7 @@ public unsafe class FlyTextHandler
         int actionId,
         int val1,
         int val2,
-        byte damageType)
+        int val3)
     {
         try
         {
@@ -531,7 +531,7 @@ public unsafe class FlyTextHandler
             Service.PluginLog.Error(ex, "Exception in AddScreenLogDetour");
         }
 
-        this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, damageType);
+        this.addToScreenLogWithScreenLogKindHook!.Original(target, source, flyTextKind, option, actionKind, actionId, val1, val2, val3);
     }
 
     private readonly List<FlyTextKind> seenExplorer = [];
@@ -572,9 +572,9 @@ public unsafe class FlyTextHandler
 
             bool shouldFilter;
 
-            if (flyTextCreation->DamageType is 1 or 2 or 3 && ShouldHideDamageTypeIcon(flyTextCreation->FlyTextKind))
+            if (flyTextCreation->Val3 is 1 or 2 or 3 && ShouldHideDamageTypeIcon(flyTextCreation->FlyTextKind))
             {
-                flyTextCreation->DamageType = 0;
+                flyTextCreation->Val3 = 0;
             }
 
             // classic function

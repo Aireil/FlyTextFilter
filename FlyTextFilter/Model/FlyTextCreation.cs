@@ -16,11 +16,10 @@ namespace FlyTextFilter.Model;
  * ((source == 1 || source == 2) && target != 0) is style 4, blue on attacks.
  *
  *
- * Damage type:
- *   1 - Physical
- *   2 - Magic
- *   3 - Unique
- *   4001->4044 - For Dataset kind, gets the text value from WKSCosmoToolName sheet.
+ * Val3:
+ *   1-2-3: Damage type icon (Physical-Magic-Unique)
+ *   if (kind == Dataset) gets the text value from WKSCosmoToolName sheet using that as rowId (4001->4044).
+ *   if (kind == exp related (Exp/IslandExp/Unknown17/Unknown18) && option == 1) is the increase amount
  * */
 [StructLayout(LayoutKind.Sequential)]
 public struct FlyTextCreation
@@ -33,5 +32,5 @@ public struct FlyTextCreation
     public int ActionId;
     public int Val1; // status id if icon
     public int Val2;
-    public uint DamageType;
+    public int Val3;
 }
