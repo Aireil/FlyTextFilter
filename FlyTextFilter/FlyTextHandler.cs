@@ -220,6 +220,7 @@ public unsafe class FlyTextHandler
         if (localPlayer != null)
         {
             var screenLogManager = this.getScreenLogManagerDelegate(localPlayer.Value);
+            byte option = 5;
             var actionId = 2555;
             byte actionKind = 1;
             var val1 = 1111;
@@ -234,7 +235,9 @@ public unsafe class FlyTextHandler
                     val1 = 3260;
                     break;
                 case FlyTextKind.Exp or FlyTextKind.IslandExp:
+                    option = 1;
                     val2 = 10;
+                    val3 = 50;
                     break;
                 case FlyTextKind.Healing or FlyTextKind.HealingCrit:
                     actionId = 16230;
@@ -253,7 +256,7 @@ public unsafe class FlyTextHandler
                 FlyTextKind = flyTextKind,
                 SourceStyle = sourceStyle,
                 TargetStyle = targetStyle,
-                Option = 5,
+                Option = option,
                 ActionKind = actionKind,
                 ActionId = actionId,
                 Val1 = val1,
