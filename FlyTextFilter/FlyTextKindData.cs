@@ -49,6 +49,8 @@ public class FlyTextKindData
             FlyTextKind.NamedTp3 => "Unused - Named TP3",
             FlyTextKind.IslandExp => "Exp - Island",
             FlyTextKind.None => "Unused - None",
+            FlyTextKind.Unknown17 => "Knowledge",
+            FlyTextKind.Unknown18 => "Exp - Phantom",
             _ => flyTextKind.ToString(),
         };
     }

@@ -234,7 +234,7 @@ public unsafe class FlyTextHandler
                 case FlyTextKind.Buff or FlyTextKind.BuffFading:
                     val1 = 3260;
                     break;
-                case FlyTextKind.Exp or FlyTextKind.IslandExp:
+                case FlyTextKind.Exp or FlyTextKind.IslandExp or FlyTextKind.Unknown17 or FlyTextKind.Unknown18:
                     option = 1;
                     val2 = 10;
                     val3 = 50;
@@ -553,9 +553,7 @@ public unsafe class FlyTextHandler
             FlyTextKind.AutoAttackNoText3
                 or FlyTextKind.CriticalHit4
                 or FlyTextKind.NamedCriticalHitWithMp
-                or FlyTextKind.NamedMp3
-                or FlyTextKind.Unknown17
-                or FlyTextKind.Unknown18 => !this.seenExplorer.Contains(flyTextKind),
+                or FlyTextKind.NamedMp3 => !this.seenExplorer.Contains(flyTextKind),
             _ => false,
         };
     }
