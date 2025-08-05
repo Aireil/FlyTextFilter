@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Numerics;
+
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using FlyTextFilter.Model;
-using ImGuiNET;
 
 namespace FlyTextFilter;
 

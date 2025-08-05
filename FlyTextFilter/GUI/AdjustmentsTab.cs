@@ -1,7 +1,7 @@
-﻿using Dalamud.Game.Gui.FlyText;
+﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface.Colors;
 using FlyTextFilter.Model.FlyTextAdjustments;
-using ImGuiNET;
 
 namespace FlyTextFilter.GUI;
 

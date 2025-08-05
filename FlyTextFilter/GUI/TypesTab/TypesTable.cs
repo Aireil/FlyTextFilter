@@ -3,12 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+
+using Dalamud.Bindings.ImGui;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using FlyTextFilter.Model;
-using ImGuiNET;
 
 namespace FlyTextFilter.GUI.TypesTab;
 

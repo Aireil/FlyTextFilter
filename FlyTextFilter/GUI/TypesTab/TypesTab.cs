@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
+
+using Dalamud.Bindings.ImGui;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using FlyTextFilter.Model;
-using ImGuiNET;
 
 namespace FlyTextFilter.GUI.TypesTab;
 
