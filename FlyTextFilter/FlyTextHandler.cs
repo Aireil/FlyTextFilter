@@ -234,7 +234,7 @@ public unsafe class FlyTextHandler
                 case FlyTextKind.Buff or FlyTextKind.BuffFading:
                     val1 = 3260;
                     break;
-                case FlyTextKind.Exp or FlyTextKind.IslandExp or FlyTextKind.Unknown17 or FlyTextKind.Unknown18:
+                case FlyTextKind.Exp or FlyTextKind.IslandExp or FlyTextKind.Knowledge or FlyTextKind.PhantomExp:
                     option = 1;
                     val2 = 10;
                     val3 = 50;
