@@ -218,7 +218,7 @@ public unsafe class FlyTextHandler
 
     public void CreateFlyText(FlyTextKind flyTextKind, byte sourceStyle, byte targetStyle)
     {
-        var localPlayer = Service.ClientState.LocalPlayer?.Address;
+        var localPlayer = Service.ObjectTable.LocalPlayer?.Address;
         if (localPlayer != null)
         {
             var screenLogManager = this.getScreenLogManagerDelegate(localPlayer.Value);
@@ -282,7 +282,7 @@ public unsafe class FlyTextHandler
 
     public void CreateFlyText(FlyTextLog flyTextLog)
     {
-        var localPlayer = Service.ClientState.LocalPlayer?.Address;
+        var localPlayer = Service.ObjectTable.LocalPlayer?.Address;
         if (localPlayer != null)
         {
             var screenLogManager = this.getScreenLogManagerDelegate(localPlayer.Value);
@@ -387,7 +387,7 @@ public unsafe class FlyTextHandler
 
     private static FlyTextCharCategory GetFlyTextCharCategory(Character* character)
     {
-        var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? nint.Zero);
+        var localPlayer = (Character*)(Service.ObjectTable.LocalPlayer?.Address ?? nint.Zero);
         if (character == null || localPlayer == null)
         {
             return FlyTextCharCategory.None;
@@ -511,10 +511,10 @@ public unsafe class FlyTextHandler
 
             var adjustedSource = source;
             if ((Service.Configuration.ShouldAdjustDotSource && flyTextKind == FlyTextKind.AutoAttackOrDot && option == 0 && actionKind == 0 && target == source)
-                || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerId == Service.ClientState.LocalPlayer?.GameObjectId)
-                || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Chocobo && source->CompanionOwnerId == Service.ClientState.LocalPlayer?.GameObjectId))
+                || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerId == Service.ObjectTable.LocalPlayer?.GameObjectId)
+                || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Chocobo && source->CompanionOwnerId == Service.ObjectTable.LocalPlayer?.GameObjectId))
             {
-                adjustedSource = (Character*)(Service.ClientState.LocalPlayer?.Address ?? nint.Zero);
+                adjustedSource = (Character*)(Service.ObjectTable.LocalPlayer?.Address ?? nint.Zero);
                 if (adjustedSource == null)
                 {
                     adjustedSource = source;
@@ -619,7 +619,7 @@ public unsafe class FlyTextHandler
             else
             {
                 // item or crafting function
-                var localPlayer = (Character*)(Service.ClientState.LocalPlayer?.Address ?? nint.Zero);
+                var localPlayer = (Character*)(Service.ObjectTable.LocalPlayer?.Address ?? nint.Zero);
                 shouldFilter = ShouldFilter(localPlayer, localPlayer, flyTextCreation->FlyTextKind);
 
                 if (this.ShouldLog)
