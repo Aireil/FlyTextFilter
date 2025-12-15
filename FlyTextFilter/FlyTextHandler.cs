@@ -6,6 +6,8 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.Gui.FlyText;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
+using FFXIVClientStructs.FFXIV.Client.Enums;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -236,8 +238,8 @@ public unsafe class FlyTextHandler
                     break;
                 case FlyTextKind.Exp or FlyTextKind.IslandExp or FlyTextKind.Knowledge or FlyTextKind.PhantomExp:
                     option = 1;
-                    val2 = 10;
                     val3 = 50;
+                    val2 = 10;
                     break;
                 case FlyTextKind.Healing or FlyTextKind.HealingCrit:
                     actionId = 16230;
@@ -246,8 +248,16 @@ public unsafe class FlyTextHandler
                     actionKind = 2;
                     break;
                 case FlyTextKind.Dataset:
-                    val3 = 4032;
+                    // checking styles to only print it once
+                    if (GameMain.Instance()->CurrentTerritoryIntendedUseId != (byte)TerritoryIntendedUse.CosmicExploration
+                        && sourceStyle == 0
+                        && targetStyle == 3)
+                    {
+                        Service.ChatGui.PrintError("This fly text type is only available in Cosmic Exploration areas.");
+                    }
+
                     val2 = 35;
+                    val3 = 4032;
                     break;
             }
 
