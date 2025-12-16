@@ -64,7 +64,7 @@ public unsafe class FlyTextHandler
             addonFlyTextOnSetupAddress = Service.SigScanner.ScanText("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC 20 80 89");
 
             // the BattleChara vf number (x8) is near the end of addToScreenLogWithScreenLogKind
-            getScreenLogManagerAddress = Service.SigScanner.ScanText("48 8D 81 60 23 00 00");
+            getScreenLogManagerAddress = Service.SigScanner.ScanText("48 8D 81 70 23 00 00");
             addToScreenLogWithScreenLogKindAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? BF ?? ?? ?? ?? EB 39");
             addToScreenLogAddress = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 45 85 E4 0F 84 ?? ?? ?? ?? 48 8B 0D");
 
