@@ -249,7 +249,7 @@ public unsafe class FlyTextHandler
                     break;
                 case FlyTextKind.Dataset:
                     // checking styles to only print it once
-                    if (GameMain.Instance()->CurrentTerritoryIntendedUseId != (byte)TerritoryIntendedUse.CosmicExploration
+                    if (GameMain.Instance()->CurrentTerritoryIntendedUseId != TerritoryIntendedUse.CosmicExploration
                         && sourceStyle == 0
                         && targetStyle == 3)
                     {
