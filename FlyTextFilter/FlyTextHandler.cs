@@ -512,7 +512,7 @@ public unsafe class FlyTextHandler
             var adjustedSource = source;
             if ((Service.Configuration.ShouldAdjustDotSource && flyTextKind == FlyTextKind.AutoAttackOrDot && option == 0 && actionKind == 0 && target == source)
                 || (Service.Configuration.ShouldAdjustPetSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Pet && source->CompanionOwnerId == Service.ObjectTable.LocalPlayer?.GameObjectId)
-                || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Chocobo && source->CompanionOwnerId == Service.ObjectTable.LocalPlayer?.GameObjectId))
+                || (Service.Configuration.ShouldAdjustChocoboSource && source->GameObject.SubKind == (int)BattleNpcSubKind.Buddy && source->CompanionOwnerId == Service.ObjectTable.LocalPlayer?.GameObjectId))
             {
                 adjustedSource = (Character*)(Service.ObjectTable.LocalPlayer?.Address ?? nint.Zero);
                 if (adjustedSource == null)
